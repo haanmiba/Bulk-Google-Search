@@ -99,37 +99,12 @@ function deleteAll() {
 
 //document.getElementById('myForm').addEventListener('submit', search);
 
-window.addEventListener("load", function(){
-	addSearchQuery();
-	loadEventListeners();
-});
-
 var numQueries = 0;
 
-// Searches something based upon what is inside of the input
-function searchSomething(id) {
-	// Get the value from the id
-	var query = document.getElementById(id).value;
-
-	// If the value is blank, don't do anything.
-	if (query == "") {
-		return false;
-	}
-
-	// Create the google search URL to be opened
-	var url = 'https://google.com/search?q=' + query;
-
-	// Open the URL in a new tab
-	window.open(url, '_blank');
-}
-
-// Adds another search query to the form
-function addSearchQuery() {
-	var queryArr = saveCurrentQueries();
-	numQueries++;
-	refreshQueries(queryArr);
-}
-
+window.addEventListener("load", function(){
+	loadEventListeners();
+	addSearchQuery();
+});
 
 function loadEventListeners() {
 	document.getElementById('addSearchButton').addEventListener("click", addSearchQuery);
@@ -139,40 +114,19 @@ function loadEventListeners() {
 	document.getElementById('addNumMoreSearchesButton').addEventListener("click", addNumMoreSearchQueries);
 }
 
+// Adds another search query to the form
+function addSearchQuery() {
+	var queryArr = saveCurrentQueries();
+	numQueries++;
+	refreshQueries(queryArr);
+}
+
 function addNumMoreSearchQueries() {
 	var num = parseInt(document.getElementById('numMoreQuries').value);
 	document.getElementById('numMoreQuries').value = "";
 	var queryArr = saveCurrentQueries();
 	numQueries += num;
 	refreshQueries(queryArr);
-}
-
-function clearSearchQuery(num) {
-	document.getElementById('search' + (num+1)).value = "";
-}
-
-function deleteSearchQuery(num) {
-	if (numQueries == 1) {
-		return false;
-	}
-	var queryArr = saveCurrentQueries();
-	queryArr.splice(num, 1);
-	numQueries--;
-	refreshQueries(queryArr);
-}
-
-function saveCurrentQueries() {
-	var arr = new Array();
-	for (var i = 0; i < numQueries; i++) {
-		arr.push(document.getElementById('search' + (i+1)).value);
-	}
-	return arr;
-}
-
-function searchAll() {
-	for (var i = 0; i < numQueries; i++) {
-		searchSomething('search' + (i+1));
-	}
 }
 
 function refreshQueries(arr) {
@@ -216,9 +170,49 @@ function refreshQueries(arr) {
 
 }
 
-function testPrint(t) {
-	console.log('CLICKED!');
-	console.log(t);
+// Searches something based upon what is inside of the input
+function searchSomething(id) {
+	// Get the value from the id
+	var query = document.getElementById(id).value;
+
+	// If the value is blank, don't do anything.
+	if (query == "") {
+		return false;
+	}
+
+	// Create the google search URL to be opened
+	var url = 'https://google.com/search?q=' + query;
+
+	// Open the URL in a new tab
+	window.open(url, '_blank');
+}
+
+function clearSearchQuery(num) {
+	document.getElementById('search' + (num+1)).value = "";
+}
+
+function deleteSearchQuery(num) {
+	if (numQueries == 1) {
+		return false;
+	}
+	var queryArr = saveCurrentQueries();
+	queryArr.splice(num, 1);
+	numQueries--;
+	refreshQueries(queryArr);
+}
+
+function saveCurrentQueries() {
+	var arr = new Array();
+	for (var i = 0; i < numQueries; i++) {
+		arr.push(document.getElementById('search' + (i+1)).value);
+	}
+	return arr;
+}
+
+function searchAll() {
+	for (var i = 0; i < numQueries; i++) {
+		searchSomething('search' + (i+1));
+	}
 }
 
 function clearAll() {
