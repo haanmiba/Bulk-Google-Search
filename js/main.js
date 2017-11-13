@@ -137,10 +137,10 @@ function refreshQueries(arr) {
 
 	allForms.innerHTML +=	'<div class="well">' + 
 							'<h5>Search ' + (i+1) +  ':</h5>' + 
-							'<input type="text" id="search' + (i+1) + '" placeholder="Search">' +
-							'<a id="searchButton' + (i+1) + '" class="btn btn-default query" href="#">Search</a>' + 
-							'<a id="clearButton' + (i+1) + '" class="btn btn-warning" href="#">Clear</a>' +
-							'<a id="deleteButton' + (i+1) + '" class="btn btn-danger" href="#">Delete</a>' + 
+							'<input type="text" id="search' + (i) + '" placeholder="Search">' +
+							'<a id="searchButton' + (i) + '" class="btn btn-default query" href="#">Search</a>' + 
+							'<a id="clearButton' + (i) + '" class="btn btn-warning" href="#">Clear</a>' +
+							'<a id="deleteButton' + (i) + '" class="btn btn-danger" href="#">Delete</a>' + 
 							'</div>';
 
 	}
@@ -148,32 +148,31 @@ function refreshQueries(arr) {
 	for (var i = 0; i < numQueries; i++) {
 
 		if (arr[i] != null) {
-			document.getElementById('search' + (i+1)).value = arr[i];
+			document.getElementById('search' + (i)).value = arr[i];
 		}
 
-		document.getElementById('searchButton' + (i+1)).addEventListener("click", function() {
-			searchSomething('search' + (i));
+		document.getElementById('searchButton' + (i)).addEventListener("click", function() {
+			searchSomething(i);
 		});
-		console.log('Adding event listener to searchButton' + (i+1)); 
+		console.log('Adding event listener to searchButton' + (i) + ' to search: search' + (i)); 
 
-		document.getElementById('clearButton' + (i+1)).addEventListener("click", function() {
-			clearSearchQuery(i+1);
+		document.getElementById('clearButton' + (i)).addEventListener("click", function() {
+			clearSearchQuery(i);
 		});
-		console.log('Adding event listener to clearButton' + (i+1)); 
 
-		document.getElementById('deleteButton' + (i+1)).addEventListener("click", function() {
+		document.getElementById('deleteButton' + (i)).addEventListener("click", function() {
 			deleteSearchQuery(i);
 		});
-		console.log('Adding event listener to deleteButton' + (i+1)); 
 
 	}
 
 }
 
 // Searches something based upon what is inside of the input
-function searchSomething(id) {
+function searchSomething(num) {
+
 	// Get the value from the id
-	var query = document.getElementById(id).value;
+	var query = document.getElementById('search' + (num-1)).value;
 
 	// If the value is blank, don't do anything.
 	if (query == "") {
@@ -204,20 +203,21 @@ function deleteSearchQuery(num) {
 function saveCurrentQueries() {
 	var arr = new Array();
 	for (var i = 0; i < numQueries; i++) {
-		arr.push(document.getElementById('search' + (i+1)).value);
+		arr.push(document.getElementById('search' + (i)).value);
 	}
 	return arr;
 }
 
 function searchAll() {
 	for (var i = 0; i < numQueries; i++) {
-		searchSomething('search' + (i+1));
+		console.log('searchSomething(' + i + ')');
+		searchSomething((i+1));
 	}
 }
 
 function clearAll() {
 		for (var i = 0; i < numQueries; i++) {
-			document.getElementById('search' + (i+1)).value = "";
+			document.getElementById('search' + (i)).value = "";
 	}
 
 }
