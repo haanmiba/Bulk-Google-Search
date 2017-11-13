@@ -1,0 +1,23 @@
+{
+	
+	"manifest_version": 2,
+
+	"name": "Bulk Query",
+	"description": "Bulk Query can perform multiple search queries in sequence.",
+	"version": "1.0",
+
+	"browser_action": {
+		"default_icon": "icons/icon.png",
+		"default_popup": "popup.html",
+		"default_title": "Bulk Query"
+	},
+
+	"content_scripts": [ {
+
+		"matches": ["<all_urls>"],
+		"css": ["css/bootstrap.min.css"],
+		"js": ["js/jquery-3.2.1.min.js", "js/bootstrap.min.js", "js/main.js"]
+
+	}]
+
+}
