@@ -55,7 +55,7 @@ function getLocalStorage() {
 }
 
 function searchAll() {
-	for (var i = 0; i < numQueries; i++) {
+	for (var i = 0; i <= numQueries; i++) {
 		searchQuery(i);
 	}
 }
