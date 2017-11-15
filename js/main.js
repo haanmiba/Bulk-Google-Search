@@ -94,7 +94,7 @@ function searchAll() {
 	var queries = JSON.parse(localStorage.getItem('queries'));
 	for (var i = 0; i < queries.length; i++) {
 		if (queries[i] != "") {
-			window.open('https://www.google.com/search?q=' + queries[i], '_blank');
+			window.open('https://www.google.com/search?q=' + encodeHTML(queries[i]), '_blank');
 		}
 	}
 	
@@ -204,13 +204,15 @@ function searchQuery(num) {
 	// Retrieve the value from a text input.
 	var query = document.getElementById('search' + num).value;
 
+	encodeHTML(query);
+
 	// If the value is blank or empty, don't do anything.
 	if (query == "") {
 		return false;
 	}
 
 	// Create the URL we will be going to.
-	var url = 'https://google.com/search?q=' + query;
+	var url = 'https://google.com/search?q=' + encodeHTML(query);
 
 	// Open this URL in another page.
 	window.open(url, '_blank');
@@ -255,4 +257,28 @@ function deleteQuery(num) {
 
 	// Update the popup window.
 	displayInputs();
+}
+
+// Converts str special characters (+, -, #, $, ...) to hex for searching. Example: 'C++' will become 'C%2B%2B'
+function encodeHTML(str) {
+
+	// Create an empty string we will be appending to
+	var retVal = "";
+
+	// Scan through the str
+	for (var i = 0; i < str.length; i++) {
+
+		// Get the decimal character code of every single character in str
+		var dCharCode = str[i].charCodeAt();
+
+		// If the decimal character code is a non-letter, non-number character (according to ASCII), convert it to hex
+		if (dCharCode < 65 || dCharCode > 127 || (dCharCode > 90 && dCharCode < 97)) {
+			retVal += ('%' + str[i].charCodeAt().toString(16));
+		} else { // Else, just append the character to our retVal
+			retVal += str[i];
+		}
+	}
+
+	// Return our retVal. A string now optimal for searching.
+	return retVal;
 }
