@@ -204,8 +204,6 @@ function searchQuery(num) {
 	// Retrieve the value from a text input.
 	var query = document.getElementById('search' + num).value;
 
-	encodeHTML(query);
-
 	// If the value is blank or empty, don't do anything.
 	if (query == "") {
 		return false;
@@ -274,7 +272,7 @@ function encodeHTML(str) {
 		// If the decimal character code is a non-letter, non-number character (according to ASCII), convert it to hex
 		if (dCharCode < 65 || dCharCode > 127 || (dCharCode > 90 && dCharCode < 97)) {
 			retVal += ('%' + str[i].charCodeAt().toString(16));
-		} else { // Else, just append the character to our retVal
+		} else { // Else, just append the regular character to our retVal without modification
 			retVal += str[i];
 		}
 	}
