@@ -5,8 +5,6 @@ window.addEventListener("load", function() {
 	initializeEventListeners();
 });
 
-//window.setInterval(saveState, 100);
-
 function initializeEventListeners() {
 	if (localStorage.getItem('queries') === null) {
 		initializeLocalStorage();
@@ -55,9 +53,14 @@ function getLocalStorage() {
 }
 
 function searchAll() {
+	var queries = JSON.parse(localStorage.getItem('queries'));
+	for (var i = 0; i < queries.length; i++) {
+		window.open('https://www.google.com/search?q=' + queries[i], '_blank');
+	}
+	/*
 	for (var i = 0; i <= numQueries; i++) {
 		searchQuery(i);
-	}
+	}*/
 }
 
 function clearAll() {
