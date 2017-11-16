@@ -1,4 +1,4 @@
-// numQueries corresponds with the current number of quieries on the popup
+// numQueries corresponds with the current number of queries on the popup
 var numQueries = 0;
 
 // When the page loads, initialize the event handlers for our buttons at the bottom of the popup window
@@ -17,7 +17,7 @@ function initializeEventListeners() {
 		addSearchQuery();
 	} else { // Else, a JSON array called queries already exists
 
-		// Retrieve our JSON array quieries. Our JSON array saves the current state of our program even after it is closed.
+		// Retrieve our JSON array queries. Our JSON array saves the current state of our program even after it is closed.
 		var queries = JSON.parse(localStorage.getItem('queries'));
 
 		// numQueries is assigned to the number of entries in our JSON array most recently saved to our local storage.
