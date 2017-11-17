@@ -1,52 +1,84 @@
-// numQueries corresponds with the current number of queries on the popup
-var numQueries = 0;
+// listNumQueries corresponds with the current number of queries in the list panel.
+var listNumQueries = 0;
 
-// When the page loads, initialize the event handlers for our buttons at the bottom of the popup window
-window.addEventListener("load", initializeEventListeners);
+// numTableQueries corresponds with the current number of rows and columns in the table panel.
+var tableNumQueries = {
+	rows: 0,
+	cols: 0
+}
 
-// Initialize event handlers and initialize local storage
-function initializeEventListeners() {
+// When the page loads, initialize the event handlers for our buttons at the bottom of the popup window.
+window.addEventListener("load", initializeProgram);
 
-	// STARTING STATE: If our local storage does not contain a JSON array called queries, initialize it.
-	if (localStorage.getItem('queries') === null) {
+// Initialize event handlers and initialize local storage.
+function initializeProgram() {
 
-		// Initialize our local storage
-		initializeLocalStorage();
+	// STARTING STATE: If our local storage does not contain a JSON array called list-queries, initialize it.
+	if (localStorage.getItem('list-queries') === null) {
 
-		// Add a single search query
-		addSearchQuery();
-	} else { // Else, a JSON array called queries already exists
+		// Initialize our list for local storage.
+		listResetLocalStorage();
 
-		// Retrieve our JSON array queries. Our JSON array saves the current state of our program even after it is closed.
-		var queries = JSON.parse(localStorage.getItem('queries'));
+		// Add a single search query.
+		listAddSearchQuery();
 
-		// numQueries is assigned to the number of entries in our JSON array most recently saved to our local storage.
-		numQueries = queries.length;
+	} else { // Else, a JSON array called list-queries already exists.
+		
+		// Retrieve our JSON array list-queries.
+		var listQueries = JSON.parse(localStorage.getItem('list-queries'));
 
-		// Display our inputs
-		displayInputs();
+		// listNumQueries is assigned to the number of entries in our JSON array most recently saved to our local storage.
+		listNumQueries = listQueries.length;
+
+		// Refresh the list.
+		listRefresh();
+
 	}
 
-	// Map the buttons on the popup window to their functions
-	document.getElementById('addSearchButton').addEventListener("click", addSearchQuery);
-	document.getElementById('searchAllButton').addEventListener("click", searchAll);
-	document.getElementById('clearAllButton').addEventListener("click", clearAll);
-	document.getElementById('deleteAllButton').addEventListener("click", deleteAll);
-	document.getElementById('addNumMoreSearchesButton').addEventListener("click", addNumMoreSearchQueries);	
-	document.getElementById('table-cell-0-0').addEventListener("input", testPrint);
+	/*
+	// STARTING STATE: If our local storage does not contain a JSON array called table-queries, initialize it.
+	if (localStorage.getItem('table-queries') === null) {
+
+		// Initialize our table for local storage.
+		tableResetLocalStorage();
+
+		tableAddRow();
+
+	} else {
+
+		// Retrieve our JSON array table-queries.
+		var tableQueries = JSON.parse(localStorage.getItem('table-queries'));
+
+		tableNumQueries.rows = tableQueries.length;
+		tableNumQueries.cols = tableQueries[0].length;
+	}*/
+
 	document.getElementById('list-tab-to-be-selected').addEventListener("click", function() { toggle(0); });
 	document.getElementById('table-tab-to-be-selected').addEventListener("click", function() { toggle(1); });
+
 	toggle(0);
+
+	document.getElementById('list-search-all-button').addEventListener("click", listSearchAll);
+	document.getElementById('list-clear-all-button').addEventListener("click", listClearAll);
+	document.getElementById('list-delete-all-button').addEventListener("click", listDeleteAll);
 }
 
-function testPrint(){
-	var t = document.getElementById('table-cell-0-0');
-	console.log(t.textContent);
+// Create an empty array and set it to our local storage for list-queries.
+function listResetLocalStorage() {
+	var listQueries = [];
+	localStorage.setItem('list-queries', JSON.stringify(listQueries));
+	var listCheckboxes = [];
+	localStorage.setItem('list-checkboxes', JSON.stringify(listCheckboxes));
 }
 
+// Create an empty array and set it to our local storage for table-queries.
+function tableResetLocalStorage() {
+	var tableQueries = [];
+	localStorage.setItem('table-queries', JSON.stringify(tableQueries));
+}
+
+// Toggles between the two panels being displayed.
 function toggle(num) {
-	console.log(num);
-
 	var lta = document.getElementById('list-tab-already-selected');
 	var lts = document.getElementById('list-tab-to-be-selected');
 	var tta = document.getElementById('table-tab-already-selected');
@@ -72,634 +104,343 @@ function toggle(num) {
 	}
 }
 
-// Create an empty array and set it to our local storage. Initializes or "resets" our local storage.
-function initializeLocalStorage() {
-
-	// Create empty array
-	var queries = [];
-
-	// Set 'queries' in local storage to the empty array
-	localStorage.setItem('queries', JSON.stringify(queries));
+// Saves the current state of the list based upon any text on the page.
+function listSaveState() {
+	var listQueries = listGetLocalStorage();
+	localStorage.setItem('list-queries', JSON.stringify(listQueries));
+	var listCheckboxes = listGetCheckboxes();
+	localStorage.setItem('list-checkboxes', JSON.stringify(listCheckboxes));
 }
 
-// Saves the current state of our program
-function saveState() {
-
-	// Get the current state of the program based upon the values inside of the text inputs.
-	var queries = getLocalStorage();
-
-	// Set 'queries' in local storage to this current array.
-	localStorage.setItem('queries', JSON.stringify(queries));
-}
-
-// Add a single text input to our popup window.
-function addSearchQuery() {
-
-	// Get the current state of the program.
-	var queries = getLocalStorage();
-
-	// Push "" at the end of our JSON array.
-	queries.push("");
-
-	// Set 'queries' in local storage to this array with "" pushed at the end.
-	localStorage.setItem('queries', JSON.stringify(queries));
-
-	// Increment numQueries
-	numQueries++;
-
-	// Display the outcome of adding this new text input.
-	displayInputs();
-}
-
-// Returns an array containing the values of any text currently in the text inputs.
-function getLocalStorage() {
+function listGetLocalStorage() {
 
 	// Create an empty array.
 	var retVal = [];
 
 	// Add to that array all of the values from the text inputs.
-	for (var i = 0; i < numQueries; i++) {
+	for (var i = 0; i < listNumQueries; i++) {
 		retVal.push(document.getElementById('list-cell-' + i).textContent);
 	}
-
 	// Return the array.
 	return retVal;
 }
 
-// Searches all of the entries.
-function searchAll() {
-	var queries = JSON.parse(localStorage.getItem('queries'));
-	var checkboxes = document.getElementsByClassName('row-check');
-	for (var i = 0; i < queries.length; i++) {
-		if (queries[i] != "" && checkboxes[i+1].checked == true) {
-			window.open('https://www.google.com/search?q=' + encodeHTML(queries[i]), '_blank');
+function listGetCheckboxes() {
+
+	var retVal = [];
+
+	var checkboxes = document.getElementsByClassName('list-checkboxes');
+
+	for (var i = 0; i < checkboxes.length; i++) {
+		if (checkboxes[i].checked) {
+			retVal.push(1);
+		} else {
+			retVal.push(0);
 		}
 	}
-	
+
+	return retVal;
+
 }
 
-// Clears all of our inputs.
-function clearAll() {
-	for (var i = 0; i < numQueries; i++) {
-		clearQuery(i);
+function listSearchAll() {
+	for (var i = 0; i < listNumQueries; i++) {
+		listPerformSearch(i);
 	}
 }
 
-// "Resets" the state of our program back to the original – single text input, and an empty queries in our local storage.
-function deleteAll() {
-
-	// Reset local storage.
-	initializeLocalStorage();
-
-	// Set numQueries back to 0.
-	numQueries = 0;
-
-	// Add a single text input to our program.
-	addSearchQuery();
-}
-
-// Add any more number of search queries.
-function addNumMoreSearchQueries() {
-
-	// Retrieve the number of text inputs the user requests to add.
-	var num = parseInt(document.getElementById('numMoreQuries').value);
-
-	// Clear the number input to add more text inputs
-	document.getElementById('numMoreQuries').value = "";
-
-	// Loop through and add num more search queries
-	for (var i = 0; i < num; i++) {
-		addSearchQuery();
+function listClearAll() {
+	for (var i = 0; i < listNumQueries; i++) {
+		listClearSearch(i);
 	}
-	//numQueries += num;
-	//displayInputs();
 }
 
-// Set the popup window to display the correct number of text inputs in their correct states.
-function displayInputs() {
+function listDeleteAll() {
+	listResetLocalStorage();
+	listClearAll();
+	listNumQueries = 0;
+	listAddSearchQuery();
+}
 
+function listAddSearchQuery() {
+
+	// Retrieves our list stored in local storage, appends "" to the end, and then sets it in local storage.
+	var listQueries = listGetLocalStorage();
+	listQueries.push("");
+	localStorage.setItem('list-queries', JSON.stringify(listQueries));
+
+	var listCheckboxes = listGetCheckboxes();
+	listCheckboxes.push(0);
+	localStorage.setItem('list-checkboxes', JSON.stringify(listCheckboxes));
+
+	listNumQueries++;
+	listRefresh();
+}
+
+function listAddSearchQuery(num) {
+	var listQueries = listGetLocalStorage();
+	listQueries.splice(num+1, 0, "");
+	localStorage.setItem('list-queries', JSON.stringify(listQueries));
+
+	var listCheckboxes = listGetCheckboxes();
+	listCheckboxes.splice(num+1, 0, 0);
+	localStorage.setItem('list-checkboxes', JSON.stringify(listCheckboxes));	
+
+	listNumQueries++;
+	listRefresh();
+}
+
+function listRefresh() {
 
 	var lb = document.getElementById('list-body');
 	lb.innerHTML = "";
-	lb.innerHTML +=	'<table><tbody><tr><th><input id="check-all" class="row-check" type="checkbox"></th><th>Query</th><th></th></tr>';
+	lb.innerHTML += '<tr><th class="list-cell-checkbox"><input id="list-check-all-checkbox" type="checkbox"></th><th>Search term</th><th></th></tr>';
 
-	// Add in numQueries number of text inputs with their corresponding search, clear, and delete buttons
-	for (var i = 0; i < numQueries; i++) {
+	for (var i = 0; i < listNumQueries; i++) {
 
-		lb.innerHTML += '<tr><td><input class="row-check" type="checkbox"></td><td id="list-cell-' + i + '" tabindex=' + (i+1) + ' contenteditable></td>' + 
+		lb.innerHTML += '<tr><td class="list-cell-checkbox"><input class="list-checkboxes" type="checkbox"></td><td id="list-cell-' + i + '" tabindex=' + (i+1) + ' contenteditable></td>' + 
 						'<td>' + 
 							'<span class="icon-buttons">' + 
-							'<a id="searchButton' + i + '" class="icon-buttons" href="#"><img class="icon-image" src="images/search-button-image.png"></a>' + 
-							'<a id="clearButton' + i + '" class="icon-buttons" href="#"><img class="icon-image" src="images/clear-button-image.png"></a>' + 
-							'<a id="deleteButton' + i + '" class="icon-buttons" href="#"><img class="icon-image" src="images/delete-button-image.png"></a>' + 
+							'<a id="list-add-search-button-' + i + '" class="icon-buttons" href="#"><img class="icon-image" src="images/add-button-image.png"></a>' + 
+							'<a id="list-search-button-' + i + '" class="icon-buttons" href="#"><img class="icon-image" src="images/search-button-image.png"></a>' + 
+							'<a id="list-clear-button-' + i + '" class="icon-buttons" href="#"><img class="icon-image" src="images/clear-button-image.png"></a>' + 
+							'<a id="list-delete-button-' + i + '" class="icon-buttons" href="#"><img class="icon-image" src="images/delete-button-image.png"></a>' + 
 							'</span>' + 
 						'</td>' + 
-						'</tr>'
+						'</tr>';
 
 	}
 
-	lb.innerHTML +=	'</tbody></table>';
+	lb.innerHTML += '<tr><td colspan="3"><input type="number" id="list-num-more-searches" placeholder="Add # more rows"><a id="list-add-num-more-searches-button" class="btn btn-primary" href="#">Submit</a></td></tr>';
 
-	// Set the correct text in the text inputs and add event listeners to all the text inputs and buttons.
-	for (var j = 0; j < numQueries; j++) {
-		setInputs(j);
-		addEvents(j);
+	listInitializeCheckboxes();
+
+	document.getElementById('list-add-num-more-searches-button').addEventListener('click', listAddNumMoreSearches);
+
+	for (var i = 0; i < listNumQueries; i++) {
+		listSetInput(i);
+		listAddEventListeners(i);
 	}
 
 }
 
-// Sets the text within the text inputs based upon the state of the program before it was altered.
-function setInputs(num) {
+function listAddNumMoreSearches() {
 
-	// Retrieve our queries from local storage.
-	var queries = JSON.parse(localStorage.getItem('queries'));
+	var num = parseInt(document.getElementById('list-num-more-searches').value);
 
-	// Set the corresponding text input with the value it had before modification.
-	if (queries[num] != "") {
-		document.getElementById('list-cell-' + num).textContent = queries[num];
+	document.getElementById('list-num-more-searches').value = "";
+
+	for (var i = 0; i < num; i++) {
+		listAddSearchQuery();
 	}
+
 }
 
-// Add event listeners to our text inputs and the buttons associated with them.
-function addEvents(num) {
+function listSetInput(num) {
 
-	// Have it so the program saves the state of itself every time there is an input in any text input.
+	var listQueries = JSON.parse(localStorage.getItem('list-queries'));
+	if (listQueries[num] != "") {
+		document.getElementById('list-cell-' + num).textContent = listQueries[num];
+	}
+
+	var checkboxesBinary = JSON.parse(localStorage.getItem('list-checkboxes'));
+	var checkboxes = document.getElementsByClassName('list-checkboxes');
+	if (checkboxesBinary[num] == 1) {
+		checkboxes[num].checked = true;
+	}
+
+}
+
+function listAddEventListeners(num) {
+
+	document.getElementById('list-check-all-checkbox').addEventListener("click", listCheckAll);
+
 	document.getElementById('list-cell-' + num).addEventListener("input", function() {
-		saveState();
-		check(num);
+		listSaveState();
+		listSetCheck(num);
 	});
 
-	// Have the program search whatever is in the text input when they click on the search button.
-	document.getElementById('searchButton' + num).addEventListener("click", function() {
-		searchQuery(num);
+	document.getElementById('list-add-search-button-' + num).addEventListener("click", function() {
+		listAddSearchQuery(num);
 	});
 
-	// Have the program clear whatever is in the text input when they click on the clear button.
-	document.getElementById('clearButton' + num).addEventListener("click", function() {
-		clearQuery(num);
+	document.getElementById('list-search-button-' + num).addEventListener("click", function() {
+		listPerformSearch(num);
 	});
 
-	// Have the program delete the text input when they click on the delete button.
-	document.getElementById('deleteButton' + num).addEventListener("click", function() {
-		deleteQuery(num);
+	document.getElementById('list-clear-button-' + num).addEventListener("click", function() {
+		listClearSearch(num);
 	});
 
-	document.getElementById('check-all').addEventListener("click", checkAll);
+	document.getElementById('list-delete-button-' + num).addEventListener("click", function() {
+		listDeleteSearch(num);
+	});
 
 }
 
-function check(num) {
-	var checkmarks = document.getElementsByClassName('row-check');
-	checkmarks[num+1].checked = true;
-}
+function listCheckAll() {
 
-function checkAll() {
-	console.log('test');
-	var ca = document.getElementById('check-all');
-	var c = document.getElementsByClassName('row-check');
-	console.log(c);
-	if (ca.checked == true) {
-		for (var i = 0; i < c.length; i++) {
-			c[i].checked = true;
+	var checkboxes = document.getElementsByClassName('list-checkboxes');
+	var checkAllCheckbox = document.getElementById('list-check-all-checkbox');
+
+	if (checkAllCheckbox.checked == true || checkAllCheckbox.indeterminate == true) {
+
+		for (var i = 0; i < checkboxes.length; i++) {
+			checkboxes[i].checked = true;
 		}
+
+		checkAllCheckbox.checked = true;
+		checkAllCheckbox.indeterminate = false;
+
+	} else if (checkAllCheckbox.checked == false) {
+
+		for (var i = 0; i < checkboxes.length; i++) {
+			checkboxes[i].checked = false;
+		}
+
+		checkAllCheckbox.checked = false;
+		checkAllCheckbox.indeterminate = false;
+
+	}
+
+	listSaveState();
+
+}
+
+function listSetCheck(num) {
+	var checkboxes = document.getElementsByClassName('list-checkboxes');
+	if (document.getElementById('list-cell-' + num).textContent != "") {
+		checkboxes[num].checked = true;
 	} else {
-		for (var i = 0; i < c.length; i++) {
-			c[i].checked = false;
+		checkboxes[num].checked = false;		
+	}
+
+	listSaveState();
+
+}
+
+function listInitializeCheckboxes() {
+
+	var checkboxes = document.getElementsByClassName('list-checkboxes');
+	for (var i = 0; i < checkboxes.length; i++) {
+		checkboxes[i].addEventListener("click", listSetCheckAllState);
+	}
+
+}
+
+function listSetCheckAllState() {
+	var checkboxes = document.getElementsByClassName('list-checkboxes');
+
+	var allChecked = true;
+	var atLeastOneChecked = false;
+	var noneChecked = true;
+
+	for (var i = 0; i < checkboxes.length; i++) {
+		if (checkboxes[i].checked == true) {
+			atLeastOneChecked = true;
+		} else {
+			allChecked = false;
+			break;
 		}
 	}
+
+	if (allChecked) {
+		document.getElementById('list-check-all-checkbox').checked = true;
+		checkAllCheckbox.indeterminate = false;
+	} else if (atLeastOneChecked) {
+		document.getElementById('list-check-all-checkbox').indeterminate = true;
+		document.getElementById('list-check-all-checkbox').checked = false;
+	}
+
+	listSaveState();
+
 }
 
-// Perform a google search.
-function searchQuery(num) {
+function listPerformSearch(num) {
 
-	// Save the current state of the program.
-	saveState();
+	listSaveState();
 
-	var checkboxes = document.getElementsByClassName('row-check');
+	var checkboxes = document.getElementsByClassName('list-checkboxes');
 
-	// Retrieve the value from a text input.
 	var query = document.getElementById('list-cell-' + num).textContent;
 
-	// If the value is blank or empty, don't do anything.
 	if (query == "") {
 		return false;
 	}
 
-	// Create the URL we will be going to.
 	var url = 'https://google.com/search?q=' + encodeHTML(query);
 
-	// Open this URL in another page.
-	if (checkboxes[num+1].checked == true) {
+	if (checkboxes[num].checked) {
 		window.open(url, '_blank');
 	}
+
 }
 
-
-// Clear a text input.
-function clearQuery(num) {
-	// Set the text input's value to blank/empty.
+function listClearSearch(num) {
 	document.getElementById('list-cell-' + num).textContent = "";
-
-	// Save the current state of our program.
-	saveState();
+	var checkboxes = document.getElementsByClassName('list-checkboxes');
+	checkboxes[num].checked = false;
+	listSaveState();
 }
 
-// Delete a text input.
-function deleteQuery(num) {
+function listDeleteSearch(num) {
 
-	console.log('Deleting ' + num);
-	// Create an empty array
-	var queries = [];
+	var listQueries = JSON.parse(localStorage.getItem('list-queries'));
+	var checkboxesBinary = JSON.parse(localStorage.getItem('list-checkboxes'));
 
-	// For every text input that is not being deleted, push to this array the values within those text inputs.
-	for (var i = 0; i < numQueries; i++) {
-		if (i != num) {
-			console.log('Pushing ' + document.getElementById('list-cell-' + i).textContent);
-			queries.push(document.getElementById('list-cell-' + i).textContent);
-		} /* else {
-			console.log("Not pushing anything");
-			queries.push("");
-		}*/
-	}
+	listQueries.splice(num, 1);
+	checkboxesBinary.splice(num, 1);
 
-	// Set this array to our local storage.
-	localStorage.setItem('queries', JSON.stringify(queries));
+/*
 
-	// Decrement the number of queries.
-	numQueries--;
+	var listQueries = [];
+	var checkboxesBinary = [];
 
-	// If the user tries to empty the popup window, have it so there is always at least one text input on the popup window.
-	if (numQueries == 0) {
-		addSearchQuery();
-		return true;
-	}
-
-	// Update the popup window.
-	displayInputs();
-}
-
-// Converts str special characters (+, -, #, $, ...) to hex for searching. Example: 'C++' will become 'C%2B%2B'
-function encodeHTML(str) {
-
-	// Create an empty string we will be appending to
-	var retVal = "";
-
-	// Scan through the str
-	for (var i = 0; i < str.length; i++) {
-
-		// Get the decimal character code of every single character in str
-		var dCharCode = str[i].charCodeAt();
-
-		// If the decimal character code is a non-letter, non-number character (according to ASCII), convert it to hex
-		if (dCharCode < 65 || dCharCode > 127 || (dCharCode > 90 && dCharCode < 97)) {
-			retVal += ('%' + str[i].charCodeAt().toString(16));
-		} else { // Else, just append the regular character to our retVal without modification
-			retVal += str[i];
-		}
-	}
-
-	// Return our retVal. A string now optimal for searching.
-	return retVal;
-}
-
-/**************************************** ADDED TABLE - NO FUNCTIONALITY
-
-// numQueries corresponds with the current number of queries on the popup
-var numQueries = 0;
-
-// When the page loads, initialize the event handlers for our buttons at the bottom of the popup window
-window.addEventListener("load", initializeEventListeners);
-
-// Initialize event handlers and initialize local storage
-function initializeEventListeners() {
-
-	// STARTING STATE: If our local storage does not contain a JSON array called queries, initialize it.
-	if (localStorage.getItem('queries') === null) {
-
-		// Initialize our local storage
-		initializeLocalStorage();
-
-		// Add a single search query
-		addSearchQuery();
-	} else { // Else, a JSON array called queries already exists
-
-		// Retrieve our JSON array queries. Our JSON array saves the current state of our program even after it is closed.
-		var queries = JSON.parse(localStorage.getItem('queries'));
-
-		// numQueries is assigned to the number of entries in our JSON array most recently saved to our local storage.
-		numQueries = queries.length;
-
-		// Display our inputs
-		displayInputs();
-	}
-
-	// Map the buttons on the popup window to their functions
-	document.getElementById('addSearchButton').addEventListener("click", addSearchQuery);
-	document.getElementById('searchAllButton').addEventListener("click", searchAll);
-	document.getElementById('clearAllButton').addEventListener("click", clearAll);
-	document.getElementById('deleteAllButton').addEventListener("click", deleteAll);
-	document.getElementById('addNumMoreSearchesButton').addEventListener("click", addNumMoreSearchQueries);	
-	document.getElementById('table-cell-0-0').addEventListener("input", testPrint);
-	document.getElementById('list-tab-to-be-selected').addEventListener("click", function() { toggle(0); });
-	document.getElementById('table-tab-to-be-selected').addEventListener("click", function() { toggle(1); });
-	toggle(0);
-}
-
-function testPrint(){
-	var t = document.getElementById('table-cell-0-0');
-	console.log(t.textContent);
-}
-
-function toggle(num) {
-	console.log(num);
-
-	var lta = document.getElementById('list-tab-already-selected');
-	var lts = document.getElementById('list-tab-to-be-selected');
-	var tta = document.getElementById('table-tab-already-selected');
-	var tts = document.getElementById('table-tab-to-be-selected');
-	var lp = document.getElementById('list-panel');
-	var tp = document.getElementById('table-panel');
-
-	if (num == 0) {
-		lta.style.display = 'inline-block';
-		lts.style.display = 'none';
-		tta.style.display = 'none';
-		tts.style.display = 'inline-block';
-		lp.style.display = 'block';
-		tp.style.display = 'none';
-	} else {
-		lta.style.display = 'none';
-		lts.style.display = 'inline-block';
-		tta.style.display = 'inline-block';
-		tts.style.display = 'none';
-		lp.style.display = 'none';
-		tp.style.display = 'block';
-
-	}
-}
-
-// Create an empty array and set it to our local storage. Initializes or "resets" our local storage.
-function initializeLocalStorage() {
-
-	// Create empty array
-	var queries = [];
-
-	// Set 'queries' in local storage to the empty array
-	localStorage.setItem('queries', JSON.stringify(queries));
-}
-
-// Saves the current state of our program
-function saveState() {
-
-	// Get the current state of the program based upon the values inside of the text inputs.
-	var queries = getLocalStorage();
-
-	// Set 'queries' in local storage to this current array.
-	localStorage.setItem('queries', JSON.stringify(queries));
-}
-
-// Add a single text input to our popup window.
-function addSearchQuery() {
-
-	// Get the current state of the program.
-	var queries = getLocalStorage();
-
-	// Push "" at the end of our JSON array.
-	queries.push("");
-
-	// Set 'queries' in local storage to this array with "" pushed at the end.
-	localStorage.setItem('queries', JSON.stringify(queries));
-
-	// Increment numQueries
-	numQueries++;
-
-	// Display the outcome of adding this new text input.
-	displayInputs();
-}
-
-// Returns an array containing the values of any text currently in the text inputs.
-function getLocalStorage() {
-
-	// Create an empty array.
-	var retVal = [];
-
-	// Add to that array all of the values from the text inputs.
-	for (var i = 0; i < numQueries; i++) {
-		retVal.push(document.getElementById('search' + i).value);
-	}
-
-	// Return the array.
-	return retVal;
-}
-
-// Searches all of the entries.
-function searchAll() {
-	var queries = JSON.parse(localStorage.getItem('queries'));
-	for (var i = 0; i < queries.length; i++) {
-		if (queries[i] != "") {
-			window.open('https://www.google.com/search?q=' + encodeHTML(queries[i]), '_blank');
-		}
-	}
 	
-}
-
-// Clears all of our inputs.
-function clearAll() {
-	for (var i = 0; i < numQueries; i++) {
-		clearQuery(i);
-	}
-}
-
-// "Resets" the state of our program back to the original – single text input, and an empty queries in our local storage.
-function deleteAll() {
-
-	// Reset local storage.
-	initializeLocalStorage();
-
-	// Set numQueries back to 0.
-	numQueries = 0;
-
-	// Add a single text input to our program.
-	addSearchQuery();
-}
-
-// Add any more number of search queries.
-function addNumMoreSearchQueries() {
-
-	// Retrieve the number of text inputs the user requests to add.
-	var num = parseInt(document.getElementById('numMoreQuries').value);
-
-	// Clear the number input to add more text inputs
-	document.getElementById('numMoreQuries').value = "";
-
-	// Loop through and add num more search queries
-	for (var i = 0; i < num; i++) {
-		addSearchQuery();
-	}
-	//numQueries += num;
-	//displayInputs();
-}
-
-// Set the popup window to display the correct number of text inputs in their correct states.
-function displayInputs() {
-
-	// Clear the div tag allForms
-	allForms.innerHTML = "";
-
-	var lb = document.getElementById('list-body');
-	lb.innerHTML = "";
-	lb.innerHTML +=	'<table><tbody>' +
-							'<tr><th><input id="check-all" type="checkbox"></th><th>Query</th><th></th></tr>';
-
-	// Add in numQueries number of text inputs with their corresponding search, clear, and delete buttons
-	for (var i = 0; i < numQueries; i++) {
-
-		if (numQueries == 1) {
-			allForms.innerHTML +=	'<div id="well"><h5>Search:</h5>';
-		} else {
-			allForms.innerHTML +=	'<div id="well"><h5>Search ' + (i+1) + ':</h5>';
-		}
-
-		allForms.innerHTML +=	'<input type="text" id="search' + i + '" placeholder="Search" tabindex=' + (i+1) + '>' + 
-								'<a id="searchButton' + i + '" class="icon-buttons" href="#"><img class="icon-image" src="images/search-button-image.png"></a>' + 
-								'<a id="clearButton' + i + '" class="icon-buttons" href="#"><img class="icon-image" src="images/clear-button-image.png"></a>' + 
-								'<a id="deleteButton' + i + '" class="icon-buttons" href="#"><img class="icon-image" src="images/delete-button-image.png"></a>' + 
-								'</div>';
-
-		lb.innerHTML += '<tr><td><input class="row-check" type="checkbox"></td><td id="list-cell-' + i + '" contenteditable></td>' + 
-						'<td>' + 
-							'<a id="searchButton' + i + '" class="icon-buttons" href="#"><img class="icon-image" src="images/search-button-image.png"></a>' + 
-							'<a id="clearButton' + i + '" class="icon-buttons" href="#"><img class="icon-image" src="images/clear-button-image.png"></a>' + 
-							'<a id="deleteButton' + i + '" class="icon-buttons" href="#"><img class="icon-image" src="images/delete-button-image.png"></a>' + 
-						'</td>' + 
-						'</tr>'
-
-	}
-
-	lb.innerHTML +=	'</tbody></table>';
-
-	// Set the correct text in the text inputs and add event listeners to all the text inputs and buttons.
-	for (var j = 0; j < numQueries; j++) {
-		setInputs(j);
-		addEvents(j);
-	}
-
-}
-
-// Sets the text within the text inputs based upon the state of the program before it was altered.
-function setInputs(num) {
-
-	// Retrieve our queries from local storage.
-	var queries = JSON.parse(localStorage.getItem('queries'));
-
-	// Set the corresponding text input with the value it had before modification.
-	if (queries[num] != "") {
-		document.getElementById('search' + num).value = queries[num];
-		document.getElementById('list-cell-' + num).textContent = queries[num];
-	}
-}
-
-// Add event listeners to our text inputs and the buttons associated with them.
-function addEvents(num) {
-
-	// Have it so the program saves the state of itself every time there is an input in any text input.
-	document.getElementById('search' + num).addEventListener("input", saveState);
-
-	// Have the program search whatever is in the text input when they click on the search button.
-	document.getElementById('searchButton' + num).addEventListener("click", function() {
-		searchQuery(num);
-	});
-
-	// Have the program clear whatever is in the text input when they click on the clear button.
-	document.getElementById('clearButton' + num).addEventListener("click", function() {
-		clearQuery(num);
-	});
-
-	// Have the program delete the text input when they click on the delete button.
-	document.getElementById('deleteButton' + num).addEventListener("click", function() {
-		deleteQuery(num);
-	});
-
-	document.getElementById('check-all').addEventListener("click", checkAll);
-
-}
-
-function checkAll() {
-	console.log('test');
-	var ca = document.getElementById('check-all');
-	var c = document.getElementsByClassName('row-check');
-	console.log(c);
-	if (ca.checked == true) {
-		for (var i = 0; i < c.length; i++) {
-			c[i].checked = true;
-		}
-	} else {
-		for (var i = 0; i < c.length; i++) {
-			c[i].checked = false;
-		}
-	}
-}
-
-// Perform a google search.
-function searchQuery(num) {
-
-	// Save the current state of the program.
-	saveState();
-
-	// Retrieve the value from a text input.
-	var query = document.getElementById('search' + num).value;
-
-	// If the value is blank or empty, don't do anything.
-	if (query == "") {
-		return false;
-	}
-
-	// Create the URL we will be going to.
-	var url = 'https://google.com/search?q=' + encodeHTML(query);
-
-	// Open this URL in another page.
-	window.open(url, '_blank');
-}
+	var checkboxes = document.getElementsByClassName('list-checkboxes');
 
 
-// Clear a text input.
-function clearQuery(num) {
-	// Set the text input's value to blank/empty.
-	document.getElementById('search' + num).value = "";
-
-	// Save the current state of our program.
-	saveState();
-}
-
-// Delete a text input.
-function deleteQuery(num) {
-
-	// Create an empty array
-	var queries = [];
-
-	// For every text input that is not being deleted, push to this array the values within those text inputs.
-	for (var i = 0; i < numQueries; i++) {
+	for (var i = 0; i < listNumQueries; i++) {
 		if (i != num) {
-			queries.push(document.getElementById('search' + i).value);
-		} else {
-			queries.push("");
+			listQueries.push(document.getElementById('list-cell-' + i).textContent);
+
+			if (checkboxes[i].checked) {
+				checkboxesBinary.push(1);
+			} else {
+				checkboxesBinary.push(0);
+			}
 		}
-	}
+	}*/
 
-	// Set this array to our local storage.
-	localStorage.setItem('queries', JSON.stringify(queries));
 
-	// Decrement the number of queries.
-	numQueries--;
+	localStorage.setItem('list-queries', JSON.stringify(listQueries));
+	localStorage.setItem('list-checkboxes', JSON.stringify(checkboxesBinary));
 
-	// If the user tries to empty the popup window, have it so there is always at least one text input on the popup window.
-	if (numQueries == 0) {
-		addSearchQuery();
+	listNumQueries--;
+
+	if (listNumQueries == 0) {
+		listAddSearchQuery();
 		return true;
 	}
 
-	// Update the popup window.
-	displayInputs();
+	listRefresh();
+
+}
+
+function tableAddRow() {
+
+	//
+
+}
+
+function tableAddColumn() {
+
+	//
+
+}
+
+function refreshTable() {
+
 }
 
 // Converts str special characters (+, -, #, $, ...) to hex for searching. Example: 'C++' will become 'C%2B%2B'
@@ -725,342 +466,3 @@ function encodeHTML(str) {
 	// Return our retVal. A string now optimal for searching.
 	return retVal;
 }
-
-*/
-
-/********************************BEFORE TABLE************************
-
-// numQueries corresponds with the current number of queries on the popup
-var numQueries = 0;
-
-// When the page loads, initialize the event handlers for our buttons at the bottom of the popup window
-window.addEventListener("load", initializeEventListeners);
-
-// Initialize event handlers and initialize local storage
-function initializeEventListeners() {
-
-	// STARTING STATE: If our local storage does not contain a JSON array called queries, initialize it.
-	if (localStorage.getItem('queries') === null) {
-
-		// Initialize our local storage
-		initializeLocalStorage();
-
-		// Add a single search query
-		addSearchQuery();
-	} else { // Else, a JSON array called queries already exists
-
-		// Retrieve our JSON array queries. Our JSON array saves the current state of our program even after it is closed.
-		var queries = JSON.parse(localStorage.getItem('queries'));
-
-		// numQueries is assigned to the number of entries in our JSON array most recently saved to our local storage.
-		numQueries = queries.length;
-
-		// Display our inputs
-		displayInputs();
-	}
-
-	// Map the buttons on the popup window to their functions
-	document.getElementById('addSearchButton').addEventListener("click", addSearchQuery);
-	document.getElementById('searchAllButton').addEventListener("click", searchAll);
-	document.getElementById('clearAllButton').addEventListener("click", clearAll);
-	document.getElementById('deleteAllButton').addEventListener("click", deleteAll);
-	document.getElementById('addNumMoreSearchesButton').addEventListener("click", addNumMoreSearchQueries);	
-	document.getElementById('table-cell-0-0').addEventListener("input", testPrint);
-	document.getElementById('list-tab-to-be-selected').addEventListener("click", function() {
-		toggle(0);
-	});
-	document.getElementById('table-tab-to-be-selected').addEventListener("click", function() {
-		toggle(1);
-	});
-	toggle(0);
-}
-
-function testPrint(){
-	var t = document.getElementById('table-cell-0-0');
-	console.log(t.textContent);
-}
-
-function toggle(num) {
-	console.log(num);
-
-	var lta = document.getElementById('list-tab-already-selected');
-	var lts = document.getElementById('list-tab-to-be-selected');
-	var tta = document.getElementById('table-tab-already-selected');
-	var tts = document.getElementById('table-tab-to-be-selected');
-	var lp = document.getElementById('list-panel');
-	var tp = document.getElementById('table-panel');
-
-	if (num == 0) {
-		lta.style.display = 'inline-block';
-		lts.style.display = 'none';
-		tta.style.display = 'none';
-		tts.style.display = 'inline-block';
-		lp.style.display = 'block';
-		tp.style.display = 'none';
-	} else {
-		lta.style.display = 'none';
-		lts.style.display = 'inline-block';
-		tta.style.display = 'inline-block';
-		tts.style.display = 'none';
-		lp.style.display = 'none';
-		tp.style.display = 'block';
-
-	}
-}
-
-// Create an empty array and set it to our local storage. Initializes or "resets" our local storage.
-function initializeLocalStorage() {
-
-	// Create empty array
-	var queries = [];
-
-	// Set 'queries' in local storage to the empty array
-	localStorage.setItem('queries', JSON.stringify(queries));
-}
-
-// Saves the current state of our program
-function saveState() {
-
-	// Get the current state of the program based upon the values inside of the text inputs.
-	var queries = getLocalStorage();
-
-	// Set 'queries' in local storage to this current array.
-	localStorage.setItem('queries', JSON.stringify(queries));
-}
-
-// Add a single text input to our popup window.
-function addSearchQuery() {
-
-	// Get the current state of the program.
-	var queries = getLocalStorage();
-
-	// Push "" at the end of our JSON array.
-	queries.push("");
-
-	// Set 'queries' in local storage to this array with "" pushed at the end.
-	localStorage.setItem('queries', JSON.stringify(queries));
-
-	// Increment numQueries
-	numQueries++;
-
-	// Display the outcome of adding this new text input.
-	displayInputs();
-}
-
-// Returns an array containing the values of any text currently in the text inputs.
-function getLocalStorage() {
-
-	// Create an empty array.
-	var retVal = [];
-
-	// Add to that array all of the values from the text inputs.
-	for (var i = 0; i < numQueries; i++) {
-		retVal.push(document.getElementById('search' + i).value);
-	}
-
-	// Return the array.
-	return retVal;
-}
-
-// Searches all of the entries.
-function searchAll() {
-	var queries = JSON.parse(localStorage.getItem('queries'));
-	for (var i = 0; i < queries.length; i++) {
-		if (queries[i] != "") {
-			window.open('https://www.google.com/search?q=' + encodeHTML(queries[i]), '_blank');
-		}
-	}
-	
-}
-
-// Clears all of our inputs.
-function clearAll() {
-	for (var i = 0; i < numQueries; i++) {
-		clearQuery(i);
-	}
-}
-
-// "Resets" the state of our program back to the original – single text input, and an empty queries in our local storage.
-function deleteAll() {
-
-	// Reset local storage.
-	initializeLocalStorage();
-
-	// Set numQueries back to 0.
-	numQueries = 0;
-
-	// Add a single text input to our program.
-	addSearchQuery();
-}
-
-// Add any more number of search queries.
-function addNumMoreSearchQueries() {
-
-	// Retrieve the number of text inputs the user requests to add.
-	var num = parseInt(document.getElementById('numMoreQuries').value);
-
-	// Clear the number input to add more text inputs
-	document.getElementById('numMoreQuries').value = "";
-
-	// Loop through and add num more search queries
-	for (var i = 0; i < num; i++) {
-		addSearchQuery();
-	}
-	//numQueries += num;
-	//displayInputs();
-}
-
-// Set the popup window to display the correct number of text inputs in their correct states.
-function displayInputs() {
-
-	// Clear the div tag allForms
-	allForms.innerHTML = "";
-
-	// Add in numQueries number of text inputs with their corresponding search, clear, and delete buttons
-	for (var i = 0; i < numQueries; i++) {
-		if (numQueries == 1) {
-			allForms.innerHTML +=	'<div id="well"><h5>Search:</h5>' + 
-									'<input type="text" id="search' + i + '" placeholder="Search" tabindex=' + (i+1) + '>' + 
-									'<a id="searchButton' + i + '" class="btn btn-success" href="#">Search</a>' + 
-									'<a id="clearButton' + i + '" class="btn btn-warning" href="#">Clear</a>' + 
-									'<a id="deleteButton' + i + '" class="btn btn-danger" href="#">Delete</a>' + 
-									'</div>';
-		} else {
-		allForms.innerHTML +=	'<div id="well"><h5>Search ' + (i+1) + ':</h5>' + 
-								'<input type="text" id="search' + i + '" placeholder="Search" tabindex=' + (i+1) + '>' + 
-								'<a id="searchButton' + i + '" class="btn btn-success" href="#">Search</a>' + 
-								'<a id="clearButton' + i + '" class="btn btn-warning" href="#">Clear</a>' + 
-								'<a id="deleteButton' + i + '" class="btn btn-danger" href="#">Delete</a>' + 
-								'</div>';
-		}
-	}
-
-	// Set the correct text in the text inputs and add event listeners to all the text inputs and buttons.
-	for (var j = 0; j < numQueries; j++) {
-		setInputs(j);
-		addEvents(j);
-	}
-
-}
-
-// Sets the text within the text inputs based upon the state of the program before it was altered.
-function setInputs(num) {
-
-	// Retrieve our queries from local storage.
-	var queries = JSON.parse(localStorage.getItem('queries'));
-
-	// Set the corresponding text input with the value it had before modification.
-	if (queries[num] != "") {
-		document.getElementById('search' + num).value = queries[num];
-	}
-}
-
-// Add event listeners to our text inputs and the buttons associated with them.
-function addEvents(num) {
-
-	// Have it so the program saves the state of itself every time there is an input in any text input.
-	document.getElementById('search' + num).addEventListener("input", saveState);
-
-	// Have the program search whatever is in the text input when they click on the search button.
-	document.getElementById('searchButton' + num).addEventListener("click", function() {
-		searchQuery(num);
-	});
-
-	// Have the program clear whatever is in the text input when they click on the clear button.
-	document.getElementById('clearButton' + num).addEventListener("click", function() {
-		clearQuery(num);
-	});
-
-	// Have the program delete the text input when they click on the delete button.
-	document.getElementById('deleteButton' + num).addEventListener("click", function() {
-		deleteQuery(num);
-	});
-}
-
-// Perform a google search.
-function searchQuery(num) {
-
-	// Save the current state of the program.
-	saveState();
-
-	// Retrieve the value from a text input.
-	var query = document.getElementById('search' + num).value;
-
-	// If the value is blank or empty, don't do anything.
-	if (query == "") {
-		return false;
-	}
-
-	// Create the URL we will be going to.
-	var url = 'https://google.com/search?q=' + encodeHTML(query);
-
-	// Open this URL in another page.
-	window.open(url, '_blank');
-}
-
-
-// Clear a text input.
-function clearQuery(num) {
-	// Set the text input's value to blank/empty.
-	document.getElementById('search' + num).value = "";
-
-	// Save the current state of our program.
-	saveState();
-}
-
-// Delete a text input.
-function deleteQuery(num) {
-
-	// Create an empty array
-	var queries = [];
-
-	// For every text input that is not being deleted, push to this array the values within those text inputs.
-	for (var i = 0; i < numQueries; i++) {
-		if (i != num) {
-			queries.push(document.getElementById('search' + i).value);
-		} else {
-			queries.push("");
-		}
-	}
-
-	// Set this array to our local storage.
-	localStorage.setItem('queries', JSON.stringify(queries));
-
-	// Decrement the number of queries.
-	numQueries--;
-
-	// If the user tries to empty the popup window, have it so there is always at least one text input on the popup window.
-	if (numQueries == 0) {
-		addSearchQuery();
-		return true;
-	}
-
-	// Update the popup window.
-	displayInputs();
-}
-
-// Converts str special characters (+, -, #, $, ...) to hex for searching. Example: 'C++' will become 'C%2B%2B'
-function encodeHTML(str) {
-
-	// Create an empty string we will be appending to
-	var retVal = "";
-
-	// Scan through the str
-	for (var i = 0; i < str.length; i++) {
-
-		// Get the decimal character code of every single character in str
-		var dCharCode = str[i].charCodeAt();
-
-		// If the decimal character code is a non-letter, non-number character (according to ASCII), convert it to hex
-		if (dCharCode < 65 || dCharCode > 127 || (dCharCode > 90 && dCharCode < 97)) {
-			retVal += ('%' + str[i].charCodeAt().toString(16));
-		} else { // Else, just append the regular character to our retVal without modification
-			retVal += str[i];
-		}
-	}
-
-	// Return our retVal. A string now optimal for searching.
-	return retVal;
-}
-
-*/

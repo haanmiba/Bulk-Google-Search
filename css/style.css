@@ -1,12 +1,12 @@
-.extension-window {
+#extension-window {
 	height: 105vh;
-	width: 90vh;
+	width: 65vh;
 	padding: .5rem;
 }
 
 table, th, td {
 	text-overflow: ellipsis;
-	border: 1px solid black;
+	border: 1px solid gray;
 	padding: 10px;
 }
 
@@ -34,4 +34,8 @@ table, th, td {
 
 .icon-image:hover {
 	filter: brightness(150%);
+}
+
+.list-cell-checkbox {
+	text-align: center;
 }

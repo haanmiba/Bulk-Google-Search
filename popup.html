@@ -5,7 +5,9 @@
 		<link rel="stylesheet" href="css/bootstrap.min.css">
 		<link rel="stylesheet" href="css/style.css">
 	</head>
-	<body class="extension-window">
+	<body id="extension-window">
+
+		<!-- Header that allows the user to select whether to use Bulk Query using a List or a Table -->
 		<header>
 			<nav class="select-mode">
 				<span id="list-tab">
@@ -27,10 +29,12 @@
 				</span>
 			</nav>
 		</header>
+
+		<!-- Main panel where the list and table panels are displayed -->
 		<div id="main-panel">
+
+			<!-- List panel that allows users to perform Bulk Query in a list-format -->
 			<div id="list-panel">
-				<div id="allForms">
-				</div>
 				<div id="list-cells">
 					<table>
 						<tbody id="list-body">
@@ -39,6 +43,8 @@
 					</table>
 				</div>
 			</div>
+
+			<!-- Table panel that allows users to perform Bulk Query in a table-format -->
 			<div id="table-panel">
 				<table>
 					<tr>
@@ -55,13 +61,10 @@
 			</div>
 		</div>
 		<br>
-		<a id="addSearchButton" class="btn btn-default" href="#">Add Another Search</a>
-		<a id="searchAllButton" class="btn btn-success" href="#">Search All</a>
-		<a id="clearAllButton" class="btn btn-warning"href="#">Clear All</a>
-		<a id="deleteAllButton" class="btn btn-danger" href="#">Delete All</a>
-		<br>
-		<h5>Add Multiple Searches</h5>
-		<input type="number" id="numMoreQuries" placeholder="# of Searches"><a id="addNumMoreSearchesButton" href="#">Submit</a>
+		<!--<a id="list-add-search-button" class="btn btn-primary" href="#">Add Another Search</a>-->
+		<a id="list-search-all-button" class="btn btn-success" href="#">Search All</a>
+		<a id="list-clear-all-button" class="btn btn-warning"href="#">Clear All</a>
+		<a id="list-delete-all-button" class="btn btn-danger" href="#">Delete All</a>
 	</body>
 	<script src="js/jquery-3.2.1.min.js"></script>
     <script src="js/bootstrap.min.js"></script>
