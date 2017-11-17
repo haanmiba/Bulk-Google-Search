@@ -283,7 +283,7 @@ function listCheckAll() {
 	var checkboxes = document.getElementsByClassName('list-checkboxes');
 	var checkAllCheckbox = document.getElementById('list-check-all-checkbox');
 
-	if (checkAllCheckbox.checked == true || checkAllCheckbox.indeterminate == true) {
+	if (checkAllCheckbox.checked == true) {
 
 		for (var i = 0; i < checkboxes.length; i++) {
 			checkboxes[i].checked = true;
@@ -292,7 +292,7 @@ function listCheckAll() {
 		checkAllCheckbox.checked = true;
 		checkAllCheckbox.indeterminate = false;
 
-	} else if (checkAllCheckbox.checked == false) {
+	} else if (checkAllCheckbox.checked == false || checkAllCheckbox.indeterminate == true) {
 
 		for (var i = 0; i < checkboxes.length; i++) {
 			checkboxes[i].checked = false;
@@ -328,28 +328,46 @@ function listInitializeCheckboxes() {
 
 }
 
+function getSum(total, num) {
+	return total + num;
+}
+
 function listSetCheckAllState() {
-	var checkboxes = document.getElementsByClassName('list-checkboxes');
 
-	var allChecked = true;
+	var checkboxes = listGetCheckboxes();
+	var sum = checkboxes.reduce(getSum);
+	console.log(sum);
+
+	var allChecked = false;
 	var atLeastOneChecked = false;
-	var noneChecked = true;
+	var noneChecked = false;
 
-	for (var i = 0; i < checkboxes.length; i++) {
-		if (checkboxes[i].checked == true) {
-			atLeastOneChecked = true;
-		} else {
-			allChecked = false;
-			break;
-		}
+	console.log("Sum is:" + sum);
+
+	if (sum == listNumQueries) {
+		allChecked = true;
+	} else if (sum == 0) {
+		noneChecked = true;
+	} else if (sum != 0) {
+		atLeastOneChecked = true;
 	}
+
+	console.log(allChecked);
+	console.log(atLeastOneChecked);
+	console.log(noneChecked);
 
 	if (allChecked) {
 		document.getElementById('list-check-all-checkbox').checked = true;
-		checkAllCheckbox.indeterminate = false;
-	} else if (atLeastOneChecked) {
+		document.getElementById('list-check-all-checkbox').indeterminate = false;
+	} 
+
+	if (atLeastOneChecked) {
 		document.getElementById('list-check-all-checkbox').indeterminate = true;
+	} 
+
+	if (noneChecked) {
 		document.getElementById('list-check-all-checkbox').checked = false;
+		document.getElementById('list-check-all-checkbox').indeterminate = false;
 	}
 
 	listSaveState();
