@@ -129,8 +129,9 @@ function getLocalStorage() {
 // Searches all of the entries.
 function searchAll() {
 	var queries = JSON.parse(localStorage.getItem('queries'));
+	var checkboxes = document.getElementsByClassName('row-check');
 	for (var i = 0; i < queries.length; i++) {
-		if (queries[i] != "") {
+		if (queries[i] != "" && checkboxes[i+1].checked == true) {
 			window.open('https://www.google.com/search?q=' + encodeHTML(queries[i]), '_blank');
 		}
 	}
@@ -180,17 +181,18 @@ function displayInputs() {
 
 	var lb = document.getElementById('list-body');
 	lb.innerHTML = "";
-	lb.innerHTML +=	'<table><tbody>' +
-							'<tr><th><input id="check-all" type="checkbox"></th><th>Query</th><th></th></tr>';
+	lb.innerHTML +=	'<table><tbody><tr><th><input id="check-all" class="row-check" type="checkbox"></th><th>Query</th><th></th></tr>';
 
 	// Add in numQueries number of text inputs with their corresponding search, clear, and delete buttons
 	for (var i = 0; i < numQueries; i++) {
 
-		lb.innerHTML += '<tr><td><input  class="row-check" type="checkbox"></td><td id="list-cell-' + i + '" tabindex=' + (i+1) + ' contenteditable></td>' + 
+		lb.innerHTML += '<tr><td><input class="row-check" type="checkbox"></td><td id="list-cell-' + i + '" tabindex=' + (i+1) + ' contenteditable></td>' + 
 						'<td>' + 
+							'<span class="icon-buttons">' + 
 							'<a id="searchButton' + i + '" class="icon-buttons" href="#"><img class="icon-image" src="images/search-button-image.png"></a>' + 
 							'<a id="clearButton' + i + '" class="icon-buttons" href="#"><img class="icon-image" src="images/clear-button-image.png"></a>' + 
 							'<a id="deleteButton' + i + '" class="icon-buttons" href="#"><img class="icon-image" src="images/delete-button-image.png"></a>' + 
+							'</span>' + 
 						'</td>' + 
 						'</tr>'
 
@@ -222,7 +224,10 @@ function setInputs(num) {
 function addEvents(num) {
 
 	// Have it so the program saves the state of itself every time there is an input in any text input.
-	document.getElementById('list-cell-' + num).addEventListener("input", saveState);
+	document.getElementById('list-cell-' + num).addEventListener("input", function() {
+		saveState();
+		check(num);
+	});
 
 	// Have the program search whatever is in the text input when they click on the search button.
 	document.getElementById('searchButton' + num).addEventListener("click", function() {
@@ -241,6 +246,11 @@ function addEvents(num) {
 
 	document.getElementById('check-all').addEventListener("click", checkAll);
 
+}
+
+function check(num) {
+	var checkmarks = document.getElementsByClassName('row-check');
+	checkmarks[num+1].checked = true;
 }
 
 function checkAll() {
@@ -265,6 +275,8 @@ function searchQuery(num) {
 	// Save the current state of the program.
 	saveState();
 
+	var checkboxes = document.getElementsByClassName('row-check');
+
 	// Retrieve the value from a text input.
 	var query = document.getElementById('list-cell-' + num).textContent;
 
@@ -277,7 +289,9 @@ function searchQuery(num) {
 	var url = 'https://google.com/search?q=' + encodeHTML(query);
 
 	// Open this URL in another page.
-	window.open(url, '_blank');
+	if (checkboxes[num+1].checked == true) {
+		window.open(url, '_blank');
+	}
 }
 
 
@@ -293,16 +307,19 @@ function clearQuery(num) {
 // Delete a text input.
 function deleteQuery(num) {
 
+	console.log('Deleting ' + num);
 	// Create an empty array
 	var queries = [];
 
 	// For every text input that is not being deleted, push to this array the values within those text inputs.
 	for (var i = 0; i < numQueries; i++) {
 		if (i != num) {
+			console.log('Pushing ' + document.getElementById('list-cell-' + i).textContent);
 			queries.push(document.getElementById('list-cell-' + i).textContent);
-		} else {
+		} /* else {
+			console.log("Not pushing anything");
 			queries.push("");
-		}
+		}*/
 	}
 
 	// Set this array to our local storage.
