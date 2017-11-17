@@ -5,9 +5,54 @@
 		<link rel="stylesheet" href="css/bootstrap.min.css">
 		<link rel="stylesheet" href="css/style.css">
 	</head>
-	<body id="extension-window">
-		<h3 class="display-5">Bulk Query</h3>
-		<div id="allForms">
+	<body class="extension-window">
+		<header>
+			<nav class="select-mode">
+				<span id="list-tab">
+					<span id="list-tab-already-selected" class="header-text">
+						LIST
+					</span>
+					<a id="list-tab-to-be-selected" class="header-text" href="#">
+						LIST
+					</a>
+				</span>
+				<span id="dividing-line">|</span>
+				<span id="table-tab">
+					<span id="table-tab-already-selected" class="header-text">
+						TABLE
+					</span>
+					<a id="table-tab-to-be-selected" class="header-text" href="#">
+						TABLE
+					</a>
+				</span>
+			</nav>
+		</header>
+		<div id="main-panel">
+			<div id="list-panel">
+				<div id="allForms">
+				</div>
+				<div id="list-cells">
+					<table>
+						<tbody id="list-body">
+							
+						</tbody>
+					</table>
+				</div>
+			</div>
+			<div id="table-panel">
+				<table>
+					<tr>
+						<th>Checkbox</th>
+						<th>First Name</th>
+						<th>Last Name</th>
+					</tr>
+					<tr>
+						<td id="table-cell-0-0" contenteditable></td>
+						<td></td>
+						<td></td>
+					</tr>
+				</table>
+			</div>
 		</div>
 		<br>
 		<a id="addSearchButton" class="btn btn-default" href="#">Add Another Search</a>

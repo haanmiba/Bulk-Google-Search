@@ -1,4 +1,36 @@
-#extension-window {
+.extension-window {
 	height: 105vh;
 	width: 90vh;
+	padding: .5rem;
+}
+
+table, th, td {
+	border: 1px solid black;
+	padding: 10px;
+}
+
+#main-panel {
+	padding-top: .5rem;
+}
+
+#dividing-line {
+	padding-left: .5rem;
+	padding-right: .5rem;
+}
+
+.header-text {
+	font-weight: bold;
+}
+
+.icon-buttons {
+	padding: .3rem;
+}
+
+.icon-image {
+	height: 1.5rem;
+	width: 1.5rem;
+}
+
+.icon-image:hover {
+	filter: brightness(150%);
 }
