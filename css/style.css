@@ -1,13 +1,19 @@
+html, body {
+	overflow: auto;
+}
+
 #extension-window {
-	height: 105vh;
-	width: 65vh;
+	height: 600px;
+	width: 800px;
 	padding: .5rem;
+	overflow-x: scroll;
 }
 
 table, th, td {
 	text-overflow: ellipsis;
 	border: 1px solid gray;
 	padding: 10px;
+	table-layout: fixed;
 }
 
 #main-panel {

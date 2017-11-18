@@ -35,14 +35,14 @@ function initializeProgram() {
 
 	}
 
-	/*
+	
 	// STARTING STATE: If our local storage does not contain a JSON array called table-queries, initialize it.
 	if (localStorage.getItem('table-queries') === null) {
 
 		// Initialize our table for local storage.
 		tableResetLocalStorage();
 
-		tableAddRow();
+		tableInitialize();
 
 	} else {
 
@@ -51,7 +51,10 @@ function initializeProgram() {
 
 		tableNumQueries.rows = tableQueries.length;
 		tableNumQueries.cols = tableQueries[0].length;
-	}*/
+
+		tableRefresh();
+
+	}
 
 	document.getElementById('list-tab-to-be-selected').addEventListener("click", function() { toggle(0); });
 	document.getElementById('table-tab-to-be-selected').addEventListener("click", function() { toggle(1); });
@@ -73,8 +76,21 @@ function listResetLocalStorage() {
 
 // Create an empty array and set it to our local storage for table-queries.
 function tableResetLocalStorage() {
+
+	var tableRow = [];
 	var tableQueries = [];
+	tableQueries.push(tableRow);
 	localStorage.setItem('table-queries', JSON.stringify(tableQueries));
+
+	var tableRowCheckboxes = [];
+	localStorage.setItem('table-row-checkboxes', JSON.stringify(tableRowCheckboxes));
+
+	var tableColCheckboxes = [];
+	localStorage.setItem('table-col-checkboxes', JSON.stringify(tableColCheckboxes));
+
+	var tableHeaders = [];
+	localStorage.setItem('table-headers', JSON.stringify(tableHeaders));
+
 }
 
 // Toggles between the two panels being displayed.
@@ -222,6 +238,8 @@ function listRefresh() {
 		listAddEventListeners(i);
 	}
 
+	listSaveState();
+
 }
 
 function listAddNumMoreSearches() {
@@ -336,13 +354,10 @@ function listSetCheckAllState() {
 
 	var checkboxes = listGetCheckboxes();
 	var sum = checkboxes.reduce(getSum);
-	console.log(sum);
 
 	var allChecked = false;
 	var atLeastOneChecked = false;
 	var noneChecked = false;
-
-	console.log("Sum is:" + sum);
 
 	if (sum == listNumQueries) {
 		allChecked = true;
@@ -351,10 +366,6 @@ function listSetCheckAllState() {
 	} else if (sum != 0) {
 		atLeastOneChecked = true;
 	}
-
-	console.log(allChecked);
-	console.log(atLeastOneChecked);
-	console.log(noneChecked);
 
 	if (allChecked) {
 		document.getElementById('list-check-all-checkbox').checked = true;
@@ -409,28 +420,6 @@ function listDeleteSearch(num) {
 	listQueries.splice(num, 1);
 	checkboxesBinary.splice(num, 1);
 
-/*
-
-	var listQueries = [];
-	var checkboxesBinary = [];
-
-	
-	var checkboxes = document.getElementsByClassName('list-checkboxes');
-
-
-	for (var i = 0; i < listNumQueries; i++) {
-		if (i != num) {
-			listQueries.push(document.getElementById('list-cell-' + i).textContent);
-
-			if (checkboxes[i].checked) {
-				checkboxesBinary.push(1);
-			} else {
-				checkboxesBinary.push(0);
-			}
-		}
-	}*/
-
-
 	localStorage.setItem('list-queries', JSON.stringify(listQueries));
 	localStorage.setItem('list-checkboxes', JSON.stringify(checkboxesBinary));
 
@@ -445,19 +434,153 @@ function listDeleteSearch(num) {
 
 }
 
+function tableSaveState() {
+
+}
+
+function tableGetLocalStorage() {
+
+	var retVal = [];
+
+	for (var i = 0; i < tableNumQueries.rows; i++) {
+
+		var retValRows = [];
+
+		for (var j = 0; j < tableNumQueries.cols; j++) {
+			retValRows.push(document.getElementById('table-cell-' + i + '-' + j).textContent);
+		}
+
+		retVal.push(retValRows);
+
+	}
+
+	return retVal;
+
+}
+
+function tableInitialize() {
+
+	var tableRow = [];
+	tableRow.push("");
+
+	var tableQueries = [];
+	tableQueries.push(tableRow);
+	localStorage.setItem('table-queries', JSON.stringify(tableQueries));
+
+	var tableRowCheckboxes = [];
+	tableRowCheckboxes.push(0);
+	localStorage.setItem('table-row-checkboxes', JSON.stringify(tableRowCheckboxes));
+
+	var tableColCheckboxes = [];
+	tableColCheckboxes.push(0);
+	localStorage.setItem('table-col-checkboxes', JSON.stringify(tableColCheckboxes));	
+
+	var tableHeaders = [];
+	tableHeaders.push('Search term');
+	localStorage.setItem('table-headers', JSON.stringify(tableHeaders));
+
+	tableNumQueries.rows = 1;
+	tableNumQueries.cols = 1;
+
+	tableRefresh();
+
+}
+
 function tableAddRow() {
 
-	//
+	var tableQueries = tableGetLocalStorage();
+	var tableNewRow = [];
+
+	for (var i = 0; i < tableNumQueries.cols; i++) {
+		tableNewRow.push("");
+	}
+
+	tableQueries.push(tableNewRow);
+	localStorage.setItem('table-queries', JSON.stringify(tableQueries));
+
+	tableNumQueries.rows++;
+
+	tableRefresh();
 
 }
 
 function tableAddColumn() {
 
-	//
+	var tableQueries = tableGetLocalStorage();
+
+	for (var i = 0; i < tableNumQueries.rows; i++) {
+		tableQueries[i].splice(0, 0, "");
+	}
+
+	localStorage.setItem('table-queries', JSON.stringify(tableQueries));
+
+
+
+	tableNumQueries.cols++;
+
+	tableRefresh();
 
 }
 
-function refreshTable() {
+function tableRefresh() {
+
+	var tb = document.getElementById('table-body');
+	tb.innerHTML = "";
+
+	tb.innerHTML += '<tr id="table-top-row">' +
+						'<td class="table-cell-checkbox">' + 
+							'<input id="table-check-all-checkbox" type="checkbox">' + 
+						'</td>' + 
+						'<td class="table-cell-col-checkbox table-cell-checkbox">' + 
+							'<input id="table-col-select-all-checkbox" class="table-col-checkboxes" type="checkbox">' + 
+						'</td>';
+
+	var ttr = document.getElementById('table-top-row');
+	
+	for (var i = 0; i < tableNumQueries.cols; i++) {
+		ttr.innerHTML += '<td><input class="table-col-checkboxes" type="checkbox"></td>';
+	}
+
+	ttr.innerHTML += '<td></td></tr>';
+
+	tb.innerHTML += '<tr id="table-header-row">' + 
+						'<td class="table-cell-checkbox">' + 
+							'<input id="table-check-row-select-all-checkbox" type="checkbox">' + 
+						'</td>' + 
+						'<td></td>';
+
+	var tableHeaders = JSON.parse(localStorage.getItem('table-headers'));
+
+	var th = document.getElementById('table-header-row');
+
+	for (var i = 0; i < tableNumQueries.cols; i++) {
+		th.innerHTML += '<th id="table-header-' + i + '" contenteditable>' + tableHeaders[i] + '</th>';
+	}
+
+	th.innerHTML += '<td></td></tr>';
+
+	for (var i = 0; i < tableNumQueries.rows; i++) {
+		tb.innerHTML += '<tr id="table-row-' + i + '"></tr>';
+		var row = document.getElementById('table-row-' + i);
+
+		row.innerHTML += 	'<td>' + 
+								'<input class="table-row-checkboxes" type="checkbox">' + 
+							'</td><td></td>';
+
+		for (var j = 0; j < tableNumQueries.cols; j++) {
+			row.innerHTML += '<td id="table-cell-' + i + '-' + j + '" contenteditable></td>';
+		}
+
+
+		row.innerHTML +=	'<td>' + 
+							'<span class="icon-buttons">' + 
+							'<a id="table-add-search-button-' + i + '" class="icon-buttons" href="#"><img class="icon-image" src="images/add-button-image.png"></a>' + 
+							'<a id="table-search-button-' + i + '" class="icon-buttons" href="#"><img class="icon-image" src="images/search-button-image.png"></a>' + 
+							'<a id="table-clear-button-' + i + '" class="icon-buttons" href="#"><img class="icon-image" src="images/clear-button-image.png"></a>' + 
+							'<a id="table-delete-button-' + i + '" class="icon-buttons" href="#"><img class="icon-image" src="images/delete-button-image.png"></a>' + 
+							'</span>' + 
+							'</td>';
+	}
 
 }
 
