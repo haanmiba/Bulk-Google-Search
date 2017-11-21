@@ -14,10 +14,15 @@ table, th, td {
 	border: 1px solid gray;
 	padding: 10px;
 	table-layout: fixed;
+	white-space: nowrap;
 }
 
 #main-panel {
 	padding-top: .5rem;
+}
+
+#list-cells {
+	padding: .5rem;
 }
 
 #dividing-line {
@@ -42,6 +47,6 @@ table, th, td {
 	filter: brightness(150%);
 }
 
-.list-cell-checkbox {
+.list-cell-checkbox, .table-cell-checkbox, .table-cell-checkbox {
 	text-align: center;
 }

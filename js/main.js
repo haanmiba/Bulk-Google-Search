@@ -44,6 +44,8 @@ function initializeProgram() {
 
 		tableInitialize();
 
+		tableRefresh();
+
 	} else {
 
 		// Retrieve our JSON array table-queries.
@@ -193,7 +195,8 @@ function listAddSearchQuery() {
 	listRefresh();
 }
 
-function listAddSearchQuery(num) {
+
+function listAddSearchQueryAtIndex(num) {
 	var listQueries = listGetLocalStorage();
 	listQueries.splice(num+1, 0, "");
 	localStorage.setItem('list-queries', JSON.stringify(listQueries));
@@ -279,7 +282,7 @@ function listAddEventListeners(num) {
 	});
 
 	document.getElementById('list-add-search-button-' + num).addEventListener("click", function() {
-		listAddSearchQuery(num);
+		listAddSearchQueryAtIndex(num);
 	});
 
 	document.getElementById('list-search-button-' + num).addEventListener("click", function() {
@@ -509,14 +512,19 @@ function tableAddColumn() {
 	var tableQueries = tableGetLocalStorage();
 
 	for (var i = 0; i < tableNumQueries.rows; i++) {
-		tableQueries[i].splice(0, 0, "");
+		tableQueries[i].push("");
 	}
 
 	localStorage.setItem('table-queries', JSON.stringify(tableQueries));
 
-
-
 	tableNumQueries.cols++;
+
+
+	var tableHeaders = [];
+	for (var i = 0; i < tableNumQueries.cols; i++) {
+		tableHeaders.push('Search term ' + i);
+	}
+	localStorage.setItem('table-headers', JSON.stringify(tableHeaders));
 
 	tableRefresh();
 
@@ -538,7 +546,7 @@ function tableRefresh() {
 	var ttr = document.getElementById('table-top-row');
 	
 	for (var i = 0; i < tableNumQueries.cols; i++) {
-		ttr.innerHTML += '<td><input class="table-col-checkboxes" type="checkbox"></td>';
+		ttr.innerHTML += '<td class="table-cell-checkbox"><input class="table-col-checkboxes" type="checkbox"></td>';
 	}
 
 	ttr.innerHTML += '<td></td></tr>';
@@ -563,7 +571,7 @@ function tableRefresh() {
 		tb.innerHTML += '<tr id="table-row-' + i + '"></tr>';
 		var row = document.getElementById('table-row-' + i);
 
-		row.innerHTML += 	'<td>' + 
+		row.innerHTML += 	'<td class="table-cell-checkbox">' + 
 								'<input class="table-row-checkboxes" type="checkbox">' + 
 							'</td><td></td>';
 
@@ -574,13 +582,29 @@ function tableRefresh() {
 
 		row.innerHTML +=	'<td>' + 
 							'<span class="icon-buttons">' + 
-							'<a id="table-add-search-button-' + i + '" class="icon-buttons" href="#"><img class="icon-image" src="images/add-button-image.png"></a>' + 
-							'<a id="table-search-button-' + i + '" class="icon-buttons" href="#"><img class="icon-image" src="images/search-button-image.png"></a>' + 
-							'<a id="table-clear-button-' + i + '" class="icon-buttons" href="#"><img class="icon-image" src="images/clear-button-image.png"></a>' + 
-							'<a id="table-delete-button-' + i + '" class="icon-buttons" href="#"><img class="icon-image" src="images/delete-button-image.png"></a>' + 
+							'<a id="table-row-add-search-button-' + i + '" class="icon-buttons" href="#"><img class="icon-image" src="images/add-button-image.png"></a>' + 
+							'<a id="table-row-search-button-' + i + '" class="icon-buttons" href="#"><img class="icon-image" src="images/search-button-image.png"></a>' + 
+							'<a id="table-row-clear-button-' + i + '" class="icon-buttons" href="#"><img class="icon-image" src="images/clear-button-image.png"></a>' + 
+							'<a id="table-row-delete-button-' + i + '" class="icon-buttons" href="#"><img class="icon-image" src="images/delete-button-image.png"></a>' + 
 							'</span>' + 
 							'</td>';
 	}
+
+	tb.innerHTML +=	'<tr id="table-bottom-row"><td></td><td></td></tr>';
+	var tbr = document.getElementById('table-bottom-row');
+
+	for (var i = 0; i < tableNumQueries.cols; i++) {
+		tbr.innerHTML +=	'<td>' + 
+							'<span class="icon-buttons">' + 
+							'<a id="table-col-add-search-button-' + i + '" class="icon-buttons" href="#"><img class="icon-image" src="images/add-button-image.png"></a>' + 
+							'<a id="table-col-search-button-' + i + '" class="icon-buttons" href="#"><img class="icon-image" src="images/search-button-image.png"></a>' + 
+							'<a id="table-col-clear-button-' + i + '" class="icon-buttons" href="#"><img class="icon-image" src="images/clear-button-image.png"></a>' + 
+							'<a id="table-col-delete-button-' + i + '" class="icon-buttons" href="#"><img class="icon-image" src="images/delete-button-image.png"></a>' + 
+							'</span>' + 
+							'</td>';
+	}
+
+	tbr.innerHTML += '<td></td>';
 
 }
 
