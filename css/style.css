@@ -36,6 +36,7 @@ table, th, td {
 
 .icon-buttons {
 	padding: .3rem;
+
 }
 
 .icon-image {
@@ -48,5 +49,9 @@ table, th, td {
 }
 
 .list-cell-checkbox, .table-cell-checkbox, .table-cell-checkbox {
+	text-align: center;
+}
+
+.icon-buttons-cell {
 	text-align: center;
 }

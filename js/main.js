@@ -58,11 +58,12 @@ function initializeProgram() {
 
 	}
 
+	// Create toggle functionality between the two panels of list and table. Always start at list.
 	document.getElementById('list-tab-to-be-selected').addEventListener("click", function() { toggle(0); });
 	document.getElementById('table-tab-to-be-selected').addEventListener("click", function() { toggle(1); });
-
 	toggle(0);
 
+	// Add functionality for the list's 'Search All', 'Clear All', and 'Delete All' buttons
 	document.getElementById('list-search-all-button').addEventListener("click", listSearchAll);
 	document.getElementById('list-clear-all-button').addEventListener("click", listClearAll);
 	document.getElementById('list-delete-all-button').addEventListener("click", listDeleteAll);
@@ -70,8 +71,12 @@ function initializeProgram() {
 
 // Create an empty array and set it to our local storage for list-queries.
 function listResetLocalStorage() {
+
+	// Create an empty array and set 'list-queries' in local storage to that empty array.
 	var listQueries = [];
 	localStorage.setItem('list-queries', JSON.stringify(listQueries));
+
+	// Create an empty array and set 'list-checkboxes' in local storage to that empty array.
 	var listCheckboxes = [];
 	localStorage.setItem('list-checkboxes', JSON.stringify(listCheckboxes));
 }
@@ -97,6 +102,7 @@ function tableResetLocalStorage() {
 
 // Toggles between the two panels being displayed.
 function toggle(num) {
+
 	var lta = document.getElementById('list-tab-already-selected');
 	var lts = document.getElementById('list-tab-to-be-selected');
 	var tta = document.getElementById('table-tab-already-selected');
@@ -438,6 +444,14 @@ function listDeleteSearch(num) {
 }
 
 function tableSaveState() {
+	var tableQueries = tableGetLocalStorage();
+	localStorage.setItem('table-queries', JSON.stringify(tableQueries));
+
+	var tableRowCheckboxes = tableGetCheckboxes('table-row-checkboxes');
+	localStorage.setItem('table-row-checkboxes', JSON.stringify(tableRowCheckboxes));
+
+	var tableColCheckboxes = tableGetCheckboxes('table-col-checkboxes');
+	localStorage.setItem('table-col-checkboxes', JSON.stringify(tableColCheckboxes));
 
 }
 
@@ -455,6 +469,24 @@ function tableGetLocalStorage() {
 
 		retVal.push(retValRows);
 
+	}
+
+	return retVal;
+
+}
+
+function tableGetCheckboxes(className) {
+
+	var retVal = [];
+
+	var checkboxes = document.getElementsByClassName(className);
+
+	for (var i = 0; i < checkboxes.length; i++) {
+		if (checkboxes[i].checked) {
+			retVal.push(1);
+		} else {
+			retVal.push(0);
+		}
 	}
 
 	return retVal;
@@ -540,20 +572,20 @@ function tableRefresh() {
 							'<input id="table-check-all-checkbox" type="checkbox">' + 
 						'</td>' + 
 						'<td class="table-cell-col-checkbox table-cell-checkbox">' + 
-							'<input id="table-col-select-all-checkbox" class="table-col-checkboxes" type="checkbox">' + 
+							'<input id="table-col-check-all-checkbox" type="checkbox">' + 
 						'</td>';
 
 	var ttr = document.getElementById('table-top-row');
 	
 	for (var i = 0; i < tableNumQueries.cols; i++) {
-		ttr.innerHTML += '<td class="table-cell-checkbox"><input class="table-col-checkboxes" type="checkbox"></td>';
+		ttr.innerHTML += '<td class="table-cell-checkbox"><input class="table-col-checkboxes table-checkboxes" type="checkbox"></td>';
 	}
 
 	ttr.innerHTML += '<td></td></tr>';
 
 	tb.innerHTML += '<tr id="table-header-row">' + 
 						'<td class="table-cell-checkbox">' + 
-							'<input id="table-check-row-select-all-checkbox" type="checkbox">' + 
+							'<input id="table-row-check-all-checkbox" type="checkbox">' + 
 						'</td>' + 
 						'<td></td>';
 
@@ -572,7 +604,7 @@ function tableRefresh() {
 		var row = document.getElementById('table-row-' + i);
 
 		row.innerHTML += 	'<td class="table-cell-checkbox">' + 
-								'<input class="table-row-checkboxes" type="checkbox">' + 
+								'<input class="table-row-checkboxes table-checkboxes" type="checkbox">' + 
 							'</td><td></td>';
 
 		for (var j = 0; j < tableNumQueries.cols; j++) {
@@ -580,8 +612,8 @@ function tableRefresh() {
 		}
 
 
-		row.innerHTML +=	'<td>' + 
-							'<span class="icon-buttons">' + 
+		row.innerHTML +=	'<td class="icon-buttons-cell">' + 
+							'<span>' + 
 							'<a id="table-row-add-search-button-' + i + '" class="icon-buttons" href="#"><img class="icon-image" src="images/add-button-image.png"></a>' + 
 							'<a id="table-row-search-button-' + i + '" class="icon-buttons" href="#"><img class="icon-image" src="images/search-button-image.png"></a>' + 
 							'<a id="table-row-clear-button-' + i + '" class="icon-buttons" href="#"><img class="icon-image" src="images/clear-button-image.png"></a>' + 
@@ -594,8 +626,8 @@ function tableRefresh() {
 	var tbr = document.getElementById('table-bottom-row');
 
 	for (var i = 0; i < tableNumQueries.cols; i++) {
-		tbr.innerHTML +=	'<td>' + 
-							'<span class="icon-buttons">' + 
+		tbr.innerHTML +=	'<td class="icon-buttons-cell">' + 
+							'<span>' + 
 							'<a id="table-col-add-search-button-' + i + '" class="icon-buttons" href="#"><img class="icon-image" src="images/add-button-image.png"></a>' + 
 							'<a id="table-col-search-button-' + i + '" class="icon-buttons" href="#"><img class="icon-image" src="images/search-button-image.png"></a>' + 
 							'<a id="table-col-clear-button-' + i + '" class="icon-buttons" href="#"><img class="icon-image" src="images/clear-button-image.png"></a>' + 
@@ -605,6 +637,145 @@ function tableRefresh() {
 	}
 
 	tbr.innerHTML += '<td></td>';
+
+	tableInitializeCheckboxes();
+
+	for (var i = 0; i < tableNumQueries.rows; i++) {
+		for (var j = 0; j < tableNumQueries.cols; j++) {
+			tableSetInput(i, j);
+			tableAddEventListeners(i, j);
+		}
+	}
+
+	tableSaveState();
+
+}
+
+function tableSetInput(i, j) {
+
+	var tableQueries = JSON.parse(localStorage.getItem('table-queries'));
+
+	if (tableQueries[i][j] != "") {
+		document.getElementById('table-cell-' + i + '-' + j).textContent = tableQueries[i][j];
+	}
+
+	var rowCheckboxesBinary = JSON.parse(localStorage.getItem('table-row-checkboxes'));
+	var rowCheckboxes = document.getElementsByClassName('table-row-checkboxes');
+	if (rowCheckboxesBinary[i] == 1) {
+		rowCheckboxes[i].checked = true;
+	}
+
+	var colCheckboxesBinary = JSON.parse(localStorage.getItem('table-col-checkboxes'));
+	var colCheckboxes = document.getElementsByClassName('table-col-checkboxes');
+	if (colCheckboxesBinary[i] == 1) {
+		colCheckboxes[i].checked = true;
+	}
+
+}
+
+function tableAddEventListeners(i, j) {
+
+	document.getElementById('table-check-all-checkbox').addEventListener("click", tableCheckAll);
+	document.getElementById('table-row-check-all-checkbox').addEventListener("click", function() {
+		tableCheckRowOrCol('table-row-checkboxes', 'table-row-check-all-checkbox');
+	});
+	document.getElementById('table-col-check-all-checkbox').addEventListener("click", function() {
+		tableCheckRowOrCol('table-col-checkboxes', 'table-col-check-all-checkbox');
+	});
+
+	document.getElementById('table-cell-' + i + '-' + j).addEventListener("input", function() {
+		tableSaveState();
+		tableSetCheck(i, j);
+	});
+
+}
+
+function tableCheckAll() {
+	var checkboxes = document.getElementsByClassName('table-checkboxes');
+	var checkAllCheckbox = document.getElementById('table-check-all-checkbox');
+
+	if (checkAllCheckbox.checked == true) {
+
+		for (var i = 0; i < checkboxes.length; i++) {
+			checkboxes[i].checked = true;
+		}
+
+		checkAllCheckbox.checked = true;
+		checkAllCheckbox.indeterminate = false;
+
+	} else if (checkAllCheckbox.checked == false || checkAllCheckbox.indeterminate == true) {
+
+		for (var i = 0; i < checkboxes.length; i++) {
+			checkboxes[i].checked = false;
+		}
+
+		checkAllCheckbox.checked = false;
+		checkAllCheckbox.indeterminate = false;
+
+	}
+
+	tableSaveState();
+
+}
+
+function tableCheckRowOrCol(className, idName) {
+
+	var checkboxes = document.getElementsByClassName(className);
+	var checkAllCheckbox = document.getElementById(idName);
+
+	if (checkAllCheckbox.checked == true) {
+
+		for (var i = 0; i < checkboxes.length; i++) {
+			checkboxes[i].checked = true;
+		}
+
+		checkAllCheckbox.checked = true;
+		checkAllCheckbox.indeterminate = false;
+
+	} else if (checkAllCheckbox.checked == false || checkAllCheckbox.indeterminate == true) {
+
+		for (var i = 0; i < checkboxes.length; i++) {
+			checkboxes[i].checked = false;
+		}
+
+		checkAllCheckbox.checked = false;
+		checkAllCheckbox.indeterminate = false;
+
+	}
+
+	tableSaveState();
+
+}
+
+function tableSetCheck(r, c) {
+	console.log('test');
+
+	var rowCheckboxes = document.getElementsByClassName('table-row-checkboxes');
+	var colCheckboxes = document.getElementsByClassName('table-col-checkboxes');
+
+	if (document.getElementById('table-cell-' + r + '-' + c).textContent != "") {
+		rowCheckboxes[r].checked = true;
+		colCheckboxes[c].checked = true;
+	} else {
+		rowCheckboxes[r].checked = false;
+		colCheckboxes[c].checked = false;
+	}
+
+	tableSaveState();
+
+}
+
+function tableInitializeCheckboxes() {
+
+	var rowCheckboxes = document.getElementsByClassName('table-row-checkboxes');
+	var colCheckboxes = document.getElementsByClassName('table-col-checkboxes');
+
+	for (var i = 0; i < rowCheckboxes.length; i++) {
+		rowCheckboxes[i].addEventListener("click", tableSetCheckAllState);
+	}
+}
+
+function tableSetCheckAllState() {
 
 }
 
