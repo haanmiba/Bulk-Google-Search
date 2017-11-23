@@ -285,10 +285,12 @@ function listAddEventListeners(num) {
 	document.getElementById('list-cell-' + num).addEventListener("input", function() {
 		listSaveState();
 		listSetCheck(num);
+		listSetCheckAllState();
 	});
 
 	document.getElementById('list-add-search-button-' + num).addEventListener("click", function() {
 		listAddSearchQueryAtIndex(num);
+		listSetCheckAllState();
 	});
 
 	document.getElementById('list-search-button-' + num).addEventListener("click", function() {
@@ -297,10 +299,12 @@ function listAddEventListeners(num) {
 
 	document.getElementById('list-clear-button-' + num).addEventListener("click", function() {
 		listClearSearch(num);
+		listSetCheckAllState();
 	});
 
 	document.getElementById('list-delete-button-' + num).addEventListener("click", function() {
 		listDeleteSearch(num);
+		listSetCheckAllState();
 	});
 
 }
@@ -418,6 +422,7 @@ function listClearSearch(num) {
 	document.getElementById('list-cell-' + num).textContent = "";
 	var checkboxes = document.getElementsByClassName('list-checkboxes');
 	checkboxes[num].checked = false;
+	listSetCheckAllState();
 	listSaveState();
 }
 
@@ -552,8 +557,8 @@ function tableAddColumn() {
 	tableNumQueries.cols++;
 
 
-	var tableHeaders = [];
-	for (var i = 0; i < tableNumQueries.cols; i++) {
+	var tableHeaders = JSON.parse(localStorage.getItem('table-headers'));
+	for (var i = tableHeaders.length; i < tableNumQueries.cols; i++) {
 		tableHeaders.push('Search term ' + i);
 	}
 	localStorage.setItem('table-headers', JSON.stringify(tableHeaders));
@@ -594,7 +599,7 @@ function tableRefresh() {
 	var th = document.getElementById('table-header-row');
 
 	for (var i = 0; i < tableNumQueries.cols; i++) {
-		th.innerHTML += '<th id="table-header-' + i + '" contenteditable>' + tableHeaders[i] + '</th>';
+		th.innerHTML += '<th id="table-header-' + i + '" class="table-headers" contenteditable>' + tableHeaders[i] + '</th>';
 	}
 
 	th.innerHTML += '<td></td></tr>';
@@ -683,10 +688,26 @@ function tableAddEventListeners(i, j) {
 		tableCheckRowOrCol('table-col-checkboxes', 'table-col-check-all-checkbox');
 	});
 
+	document.getElementById('table-header-' + j).addEventListener("input", tableSaveHeaders);
+
 	document.getElementById('table-cell-' + i + '-' + j).addEventListener("input", function() {
 		tableSaveState();
 		tableSetCheck(i, j);
 	});
+
+}
+
+function tableSaveHeaders() {
+
+	var headers = document.getElementsByClassName('table-headers');
+
+	var localStorageHeaders = [];
+
+	for (var i = 0; i < headers.length; i++) {
+		localStorageHeaders.push(headers[i].textContent);
+	}
+
+	localStorage.setItem('table-headers', JSON.stringify(localStorageHeaders));
 
 }
 
@@ -747,19 +768,49 @@ function tableCheckRowOrCol(className, idName) {
 
 }
 
+function tableRowOrColHasContent(rowOrCol, num) {
+
+	var hasContent = false;
+
+	if (rowOrCol == 0) {
+		for (var i = 0; i < tableNumQueries.cols; i++) {
+			if (document.getElementById('table-cell-' + num + '-' + i).textContent != "") {
+				hasContent = true;
+				break;
+			}
+		}
+	} else {
+		for (var i = 0; i < tableNumQueries.rows; i++) {
+			if (document.getElementById('table-cell-' + i + '-' + num).textContent != "") {
+				hasContent = true;
+				break;
+			}
+		}
+
+	}
+
+	return hasContent;
+
+}
+
 function tableSetCheck(r, c) {
-	console.log('test');
 
 	var rowCheckboxes = document.getElementsByClassName('table-row-checkboxes');
 	var colCheckboxes = document.getElementsByClassName('table-col-checkboxes');
 
-	if (document.getElementById('table-cell-' + r + '-' + c).textContent != "") {
+	if (document.getElementById('table-cell-' + r + '-' + c).textContent != "" && 
+		(rowCheckboxes[r].checked == false || colCheckboxes[c].checked == false)) {
 		rowCheckboxes[r].checked = true;
 		colCheckboxes[c].checked = true;
-	} else {
+	} 
+
+	if (!tableRowOrColHasContent(0, r)) {
 		rowCheckboxes[r].checked = false;
-		colCheckboxes[c].checked = false;
 	}
+
+	if (!tableRowOrColHasContent(1, c)) {
+		colCheckboxes[c].checked = false;
+	}	
 
 	tableSaveState();
 

@@ -15,6 +15,7 @@ table, th, td {
 	padding: 10px;
 	table-layout: fixed;
 	white-space: nowrap;
+	overflow: auto;
 }
 
 #main-panel {
