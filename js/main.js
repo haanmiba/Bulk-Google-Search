@@ -569,9 +569,7 @@ function tableAddColumn() {
 
 
 	var tableHeaders = JSON.parse(localStorage.getItem('table-headers'));
-	for (var i = tableHeaders.length; i < tableNumQueries.cols; i++) {
-		tableHeaders.push('Search term ' + i);
-	}
+	tableHeaders.push('Search term ' + tableNumQueries.cols);
 	localStorage.setItem('table-headers', JSON.stringify(tableHeaders));
 
 	tableRefresh();
@@ -703,9 +701,13 @@ function tableAddEventListeners(i, j) {
 	document.getElementById('table-check-all-checkbox').addEventListener("click", tableCheckAll);
 	document.getElementById('table-row-check-all-checkbox').addEventListener("click", function() {
 		tableCheckRowOrCol('table-row-checkboxes', 'table-row-check-all-checkbox');
+		tableSetCheckAllState();
+
 	});
 	document.getElementById('table-col-check-all-checkbox').addEventListener("click", function() {
 		tableCheckRowOrCol('table-col-checkboxes', 'table-col-check-all-checkbox');
+		tableSetCheckAllState();
+
 	});
 
 	document.getElementById('table-header-' + j).addEventListener("input", tableSaveHeaders);
@@ -713,6 +715,9 @@ function tableAddEventListeners(i, j) {
 	document.getElementById('table-cell-' + i + '-' + j).addEventListener("input", function() {
 		tableSaveState();
 		tableSetCheck(i, j);
+		tableSetCheckRowOrColState('table-row-checkboxes');
+		tableSetCheckRowOrColState('table-col-checkboxes');
+		tableSetCheckAllState();
 	});
 
 }
@@ -787,7 +792,7 @@ function tableAddRowOrColAtIndex(rowOrCol, num) {
 		localStorage.setItem('table-col-checkboxes', JSON.stringify(checkboxes));
 
 		var headers = JSON.parse(localStorage.getItem('table-headers'))
-		headers.splice(num+1, 0, 'Search term ' + (num+1));
+		headers.splice(num+1, 0, 'Search term ' + (tableNumQueries.cols));
 		localStorage.setItem('table-headers', JSON.stringify(headers));
 
 	}

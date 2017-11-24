@@ -22,7 +22,7 @@ table, th, td {
 	padding-top: .5rem;
 }
 
-#list-cells {
+#list-cells, #table-cells {
 	padding: .5rem;
 }
 
