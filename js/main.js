@@ -498,6 +498,17 @@ function tableGetCheckboxes(className) {
 
 }
 
+function tableGetHeaders() {
+	var retVal = [];
+
+	for (var i = 0; i < tableNumQueries.cols; i++) {
+		retVal.push(document.getElementById('table-header-' + i).textContent);
+	}
+
+	return retVal;
+
+}
+
 function tableInitialize() {
 
 	var tableRow = [];
@@ -652,6 +663,15 @@ function tableRefresh() {
 		}
 	}
 
+	for (var i = 0; i < tableNumQueries.rows; i++) {
+		tableAddEventListenersToButtons(0, i);
+	}
+
+	for (var j = 0; j < tableNumQueries.cols; j++) {
+		tableAddEventListenersToButtons(1, j);
+	}
+
+
 	tableSaveState();
 
 }
@@ -694,6 +714,178 @@ function tableAddEventListeners(i, j) {
 		tableSaveState();
 		tableSetCheck(i, j);
 	});
+
+}
+
+function tableAddEventListenersToButtons(rowOrCol, num) {
+
+	if (rowOrCol == 0) {
+
+		document.getElementById('table-row-add-search-button-' + num).addEventListener("click", function() {
+			tableAddRowOrColAtIndex(rowOrCol, num);
+		});
+
+		document.getElementById('table-row-search-button-' + num).addEventListener("click", function() {
+			tableSearchRowOrCol(rowOrCol, num);
+		});
+
+		document.getElementById('table-row-clear-button-' + num).addEventListener("click", function() {
+			tableClearRowOrCol(rowOrCol, num);
+		});
+
+		document.getElementById('table-row-delete-button-' + num).addEventListener("click", function() {
+			tableDeleteRowOrCol(rowOrCol, num);
+		});
+
+	} else if (rowOrCol == 1) {
+
+		document.getElementById('table-col-add-search-button-' + num).addEventListener("click", function() {
+			tableAddRowOrColAtIndex(rowOrCol, num);
+		});		
+
+		document.getElementById('table-col-search-button-' + num).addEventListener("click", function() {
+			tableSearchRowOrCol(rowOrCol, num);
+		});
+
+		document.getElementById('table-col-clear-button-' + num).addEventListener("click", function() {
+			tableClearRowOrCol(rowOrCol, num);
+		});
+
+		document.getElementById('table-col-delete-button-' + num).addEventListener("click", function() {
+			tableDeleteRowOrCol(rowOrCol, num);
+		});
+
+	}
+
+}
+
+function tableAddRowOrColAtIndex(rowOrCol, num) {
+
+	var tableQueries = tableGetLocalStorage();
+	if (rowOrCol == 0) {
+
+		var newEmptyRow = [];
+		for (var i = 0; i < tableNumQueries.cols; i++) {
+			newEmptyRow.push("");
+		}
+		tableQueries.splice(num+1, 0, newEmptyRow);
+		tableNumQueries.rows++;
+
+		var checkboxes = tableGetCheckboxes('table-row-checkboxes');
+		checkboxes.splice(num+1, 0, 0);
+		localStorage.setItem('table-row-checkboxes', JSON.stringify(checkboxes));
+
+	} else if (rowOrCol == 1) {
+
+		for (var i = 0; i < tableNumQueries.rows; i++) {
+			tableQueries[i].splice(num+1, 0, "");
+		}
+		tableNumQueries.cols++;
+
+		var checkboxes = tableGetCheckboxes('table-col-checkboxes');
+		checkboxes.splice(num+1, 0, 0);
+		localStorage.setItem('table-col-checkboxes', JSON.stringify(checkboxes));
+
+		var headers = JSON.parse(localStorage.getItem('table-headers'))
+		headers.splice(num+1, 0, 'Search term ' + (num+1));
+		localStorage.setItem('table-headers', JSON.stringify(headers));
+
+	}
+
+	localStorage.setItem('table-queries', JSON.stringify(tableQueries));
+	tableRefresh();
+}
+
+function tableSearchRowOrCol(rowOrCol, num) {
+
+	tableSaveState();
+
+	var rowCheckboxes = document.getElementsByClassName('table-row-checkboxes');
+	var colCheckboxes = document.getElementsByClassName('table-col-checkboxes');
+	var url = 'https://google.com/search?q=';
+
+	if (rowOrCol == 0) {
+
+		for (var i = 0; i < tableNumQueries.cols; i++) {
+
+			var query = document.getElementById('table-cell-' + num + '-' + i).textContent;
+
+			if (colCheckboxes[i].checked && rowCheckboxes[num].checked && query != "") {
+				window.open(url + encodeHTML(query), '_blank');
+			}
+
+		}
+
+	} else if (rowOrCol == 1) {
+
+		for (var j = 0; j < tableNumQueries.rows; j++) {
+
+			var query = document.getElementById('table-cell-' + j + '-' + num).textContent;
+
+			if (rowCheckboxes[j].checked && colCheckboxes[num].checked && query != "") {
+				window.open(url + encodeHTML(query), '_blank');
+			}
+
+		}
+
+	}
+
+}
+
+function tableClearRowOrCol(rowOrCol, num) {
+
+	if (rowOrCol == 0) {
+
+		for (var i = 0; i < tableNumQueries.cols; i++) {
+			document.getElementById('table-cell-' + num + '-' + i).textContent = "";
+			var checkboxes = document.getElementsByClassName('table-row-checkboxes');
+			checkboxes[num].checked = false;
+			tableSetCheckRowOrColState('table-row-checkboxes');
+			tableSetCheckAllState();
+			tableSaveState();
+		}
+
+	} else if (rowOrCol == 1) {
+
+		for (var j = 0; j < tableNumQueries.rows; j++) {
+			document.getElementById('table-cell-' + j + '-' + num).textContent = "";
+			var checkboxes = document.getElementsByClassName('table-col-checkboxes');
+			checkboxes[num].checked = false;
+			tableSetCheckRowOrColState('table-col-checkboxes');
+			tableSetCheckAllState();
+			tableSaveState();
+		}
+
+	}
+
+}
+
+function tableDeleteRowOrCol(rowOrCol, num) {
+
+	var tableQueries = JSON.parse(localStorage.getItem('table-queries'));
+	var rowCheckboxes = JSON.parse(localStorage.getItem('table-row-checkboxes'));
+	var colCheckboxes = JSON.parse(localStorage.getItem('table-col-checkboxes'));	
+	var headers = JSON.parse(localStorage.getItem('table-headers'));
+
+	if (rowOrCol == 0 && tableNumQueries.rows != 1) {
+		tableQueries.splice(num, 1);
+		rowCheckboxes.splice(num, 1);
+		tableNumQueries.rows--;
+	} else if (rowOrCol == 1 && tableNumQueries.cols != 1) {
+		for (var i = 0; i < tableNumQueries.rows; i++) {
+			tableQueries[i].splice(num, 1);
+		}
+		colCheckboxes.splice(num, 1);
+		headers.splice(num, 1);
+		tableNumQueries.cols--;
+	}
+
+	localStorage.setItem('table-queries', JSON.stringify(tableQueries));
+	localStorage.setItem('table-row-checkboxes', JSON.stringify(rowCheckboxes));
+	localStorage.setItem('table-col-checkboxes', JSON.stringify(colCheckboxes));
+	localStorage.setItem('table-headers', JSON.stringify(headers));
+
+	tableRefresh();
 
 }
 
@@ -822,11 +1014,81 @@ function tableInitializeCheckboxes() {
 	var colCheckboxes = document.getElementsByClassName('table-col-checkboxes');
 
 	for (var i = 0; i < rowCheckboxes.length; i++) {
-		rowCheckboxes[i].addEventListener("click", tableSetCheckAllState);
+		rowCheckboxes[i].addEventListener("click", function() {
+			tableSetCheckAllState();
+			tableSetCheckRowOrColState('table-row-checkboxes');
+		});
 	}
+
+	for (var i = 0; i < colCheckboxes.length; i++) {
+		colCheckboxes[i].addEventListener("click", function() {
+			tableSetCheckAllState();
+			tableSetCheckRowOrColState('table-col-checkboxes');
+		});
+	}
+
 }
 
 function tableSetCheckAllState() {
+
+	var rowCheckboxes = tableGetCheckboxes('table-row-checkboxes');
+	var colCheckboxes = tableGetCheckboxes('table-col-checkboxes');
+
+	var rowSum = rowCheckboxes.reduce(getSum);
+	var colSum = colCheckboxes.reduce(getSum);
+	var sum = rowSum + colSum;
+
+	var numRow = tableNumQueries.rows;
+	var numCol = tableNumQueries.cols;
+
+	if (sum == numRow + numCol) {
+		document.getElementById('table-check-all-checkbox').checked = true;
+		document.getElementById('table-check-all-checkbox').indeterminate = false;
+	} else if (sum != 0) {
+		document.getElementById('table-check-all-checkbox').indeterminate = true;
+	}
+
+	if (sum == 0) {
+		document.getElementById('table-check-all-checkbox').checked = false;
+		document.getElementById('table-check-all-checkbox').indeterminate = false;		
+	}
+
+}
+
+function tableSetCheckRowOrColState(className) {
+
+	var checkboxes = tableGetCheckboxes(className);
+	var sum = checkboxes.reduce(getSum);
+
+	if (className == 'table-row-checkboxes') {
+
+		if (sum == tableNumQueries.rows) {
+			document.getElementById('table-row-check-all-checkbox').checked = true;
+			document.getElementById('table-row-check-all-checkbox').indeterminate = false;
+		} else if (sum != 0) {
+			document.getElementById('table-row-check-all-checkbox').indeterminate = true;	
+		}
+
+		if (sum == 0) {
+			document.getElementById('table-row-check-all-checkbox').checked = false;
+			document.getElementById('table-row-check-all-checkbox').indeterminate = false;			
+		}
+
+	} else {
+
+		if (sum == tableNumQueries.cols) {
+			document.getElementById('table-col-check-all-checkbox').checked = true;
+			document.getElementById('table-col-check-all-checkbox').indeterminate = false;
+		} else if (sum != 0) {
+			document.getElementById('table-col-check-all-checkbox').indeterminate = true;	
+		}
+
+		if (sum == 0) {
+			document.getElementById('table-col-check-all-checkbox').checked = false;
+			document.getElementById('table-col-check-all-checkbox').indeterminate = false;			
+		}
+
+	}
 
 }
 
