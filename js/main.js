@@ -34,7 +34,6 @@ function initializeProgram() {
 		listRefresh();
 
 	}
-
 	
 	// STARTING STATE: If our local storage does not contain a JSON array called table-queries, initialize it.
 	if (localStorage.getItem('table-queries') === null) {
@@ -669,7 +668,6 @@ function tableRefresh() {
 		tableAddEventListenersToButtons(1, j);
 	}
 
-
 	tableSaveState();
 
 }
@@ -888,7 +886,7 @@ function tableDeleteRowOrCol(rowOrCol, num) {
 	localStorage.setItem('table-queries', JSON.stringify(tableQueries));
 	localStorage.setItem('table-row-checkboxes', JSON.stringify(rowCheckboxes));
 	localStorage.setItem('table-col-checkboxes', JSON.stringify(colCheckboxes));
-	localStorage.setItem('table-headers', JSON.stringify(headers));
+	localStorage.setItem('<t></t>able-headers', JSON.stringify(headers));
 
 	tableRefresh();
 
@@ -1094,6 +1092,8 @@ function tableSetCheckRowOrColState(className) {
 		}
 
 	}
+
+	tableSaveState();
 
 }
 
