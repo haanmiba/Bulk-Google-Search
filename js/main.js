@@ -858,6 +858,9 @@ function tableClearRowOrCol(rowOrCol, num) {
 			document.getElementById('table-cell-' + num + '-' + i).textContent = "";
 			var checkboxes = document.getElementsByClassName('table-row-checkboxes');
 			checkboxes[num].checked = false;
+
+			tableSetCheck(num, i);
+
 			tableSetCheckRowOrColState('table-row-checkboxes');
 			tableSetCheckAllState();
 			tableSaveState();
@@ -869,6 +872,9 @@ function tableClearRowOrCol(rowOrCol, num) {
 			document.getElementById('table-cell-' + j + '-' + num).textContent = "";
 			var checkboxes = document.getElementsByClassName('table-col-checkboxes');
 			checkboxes[num].checked = false;
+
+			tableSetCheck(j, num);
+
 			tableSetCheckRowOrColState('table-col-checkboxes');
 			tableSetCheckAllState();
 			tableSaveState();
