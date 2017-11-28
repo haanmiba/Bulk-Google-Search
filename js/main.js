@@ -33,6 +33,9 @@ function initializeProgram() {
 		// Refresh the list.
 		listRefresh();
 
+		// Set the state of the check all checkbox
+		listSetCheckAllState();
+
 	}
 	
 	// STARTING STATE: If our local storage does not contain a JSON array called table-queries, initialize it.
@@ -54,6 +57,11 @@ function initializeProgram() {
 		tableNumQueries.cols = tableQueries[0].length;
 
 		tableRefresh();
+
+		// Set the states of the check-all checkboxes
+		tableSetCheckAllState();
+		tableSetCheckRowOrColState('table-row-checkboxes');
+		tableSetCheckRowOrColState('table-col-checkboxes');
 
 	}
 
@@ -660,6 +668,8 @@ function tableRefresh() {
 		}
 	}
 
+	tableSetCheckboxes();
+
 	for (var i = 0; i < tableNumQueries.rows; i++) {
 		tableAddEventListenersToButtons(0, i);
 	}
@@ -680,16 +690,24 @@ function tableSetInput(i, j) {
 		document.getElementById('table-cell-' + i + '-' + j).textContent = tableQueries[i][j];
 	}
 
+}
+
+function tableSetCheckboxes() {
+
 	var rowCheckboxesBinary = JSON.parse(localStorage.getItem('table-row-checkboxes'));
 	var rowCheckboxes = document.getElementsByClassName('table-row-checkboxes');
-	if (rowCheckboxesBinary[i] == 1) {
-		rowCheckboxes[i].checked = true;
+	for (var i = 0; i < rowCheckboxesBinary.length; i++) {
+		if (rowCheckboxesBinary[i] == 1) {
+			rowCheckboxes[i].checked = true;
+		}
 	}
 
 	var colCheckboxesBinary = JSON.parse(localStorage.getItem('table-col-checkboxes'));
 	var colCheckboxes = document.getElementsByClassName('table-col-checkboxes');
-	if (colCheckboxesBinary[i] == 1) {
-		colCheckboxes[i].checked = true;
+	for (var i = 0; i < colCheckboxesBinary.length; i++) {
+		if (colCheckboxesBinary[i] == 1) {
+			colCheckboxes[i].checked = true;
+		}
 	}
 
 }
@@ -870,6 +888,9 @@ function tableDeleteRowOrCol(rowOrCol, num) {
 	var colCheckboxes = JSON.parse(localStorage.getItem('table-col-checkboxes'));	
 	var headers = JSON.parse(localStorage.getItem('table-headers'));
 
+	console.log("Row Checkboxes (before deletion): " + rowCheckboxes);
+	console.log("Col Checkboxes (before deletion): " + colCheckboxes);
+
 	if (rowOrCol == 0 && tableNumQueries.rows != 1) {
 		tableQueries.splice(num, 1);
 		rowCheckboxes.splice(num, 1);
@@ -883,10 +904,13 @@ function tableDeleteRowOrCol(rowOrCol, num) {
 		tableNumQueries.cols--;
 	}
 
+	console.log("Row Checkboxes (after deletion): " + rowCheckboxes);
+	console.log("Col Checkboxes (after deletion): " + colCheckboxes);
+
 	localStorage.setItem('table-queries', JSON.stringify(tableQueries));
 	localStorage.setItem('table-row-checkboxes', JSON.stringify(rowCheckboxes));
 	localStorage.setItem('table-col-checkboxes', JSON.stringify(colCheckboxes));
-	localStorage.setItem('<t></t>able-headers', JSON.stringify(headers));
+	localStorage.setItem('table-headers', JSON.stringify(headers));
 
 	tableRefresh();
 
@@ -929,6 +953,9 @@ function tableCheckAll() {
 		checkAllCheckbox.indeterminate = false;
 
 	}
+
+	tableSetCheckRowOrColState('table-row-checkboxes');
+	tableSetCheckRowOrColState('table-col-checkboxes');
 
 	tableSaveState();
 
