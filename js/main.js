@@ -744,6 +744,10 @@ function tableAddEventListenersToButtons(rowOrCol, num) {
 
 		document.getElementById('table-row-add-search-button-' + num).addEventListener("click", function() {
 			tableAddRowOrColAtIndex(rowOrCol, num);
+			tableSetCheckAllState();
+			tableSetCheckRowOrColState('table-row-checkboxes');
+			tableSetCheckRowOrColState('table-col-checkboxes');
+
 		});
 
 		document.getElementById('table-row-search-button-' + num).addEventListener("click", function() {
@@ -752,16 +756,25 @@ function tableAddEventListenersToButtons(rowOrCol, num) {
 
 		document.getElementById('table-row-clear-button-' + num).addEventListener("click", function() {
 			tableClearRowOrCol(rowOrCol, num);
+			tableSetCheckAllState();
+			tableSetCheckRowOrColState('table-row-checkboxes');
+			tableSetCheckRowOrColState('table-col-checkboxes');
 		});
 
 		document.getElementById('table-row-delete-button-' + num).addEventListener("click", function() {
 			tableDeleteRowOrCol(rowOrCol, num);
+			tableSetCheckAllState();
+			tableSetCheckRowOrColState('table-row-checkboxes');
+			tableSetCheckRowOrColState('table-col-checkboxes');
 		});
 
 	} else if (rowOrCol == 1) {
 
 		document.getElementById('table-col-add-search-button-' + num).addEventListener("click", function() {
 			tableAddRowOrColAtIndex(rowOrCol, num);
+			tableSetCheckAllState();
+			tableSetCheckRowOrColState('table-row-checkboxes');
+			tableSetCheckRowOrColState('table-col-checkboxes');
 		});		
 
 		document.getElementById('table-col-search-button-' + num).addEventListener("click", function() {
@@ -770,10 +783,16 @@ function tableAddEventListenersToButtons(rowOrCol, num) {
 
 		document.getElementById('table-col-clear-button-' + num).addEventListener("click", function() {
 			tableClearRowOrCol(rowOrCol, num);
+			tableSetCheckAllState();
+			tableSetCheckRowOrColState('table-row-checkboxes');
+			tableSetCheckRowOrColState('table-col-checkboxes');
 		});
 
 		document.getElementById('table-col-delete-button-' + num).addEventListener("click", function() {
 			tableDeleteRowOrCol(rowOrCol, num);
+			tableSetCheckAllState();
+			tableSetCheckRowOrColState('table-row-checkboxes');
+			tableSetCheckRowOrColState('table-col-checkboxes');
 		});
 
 	}
