@@ -10,6 +10,7 @@ var tableNumQueries = {
 // When the page loads, initialize the event handlers for our buttons at the bottom of the popup window.
 window.addEventListener("load", initializeProgram);
 
+
 // Initialize event handlers and initialize local storage.
 function initializeProgram() {
 
@@ -81,6 +82,17 @@ function initializeProgram() {
 	document.getElementById('table-add-num-more-cols-button').addEventListener("click", function() {
 		tableAddNumMoreSearches(1);
 	});
+
+	document.getElementById('table-search-all-button').addEventListener("click", tableToggleSearchAll);
+	document.getElementById('table-search-all-row-by-row-button').addEventListener("click", function() {
+		tableSearchAll(0);
+	});
+	document.getElementById('table-search-all-col-by-col-button').addEventListener("click", function() {
+		tableSearchAll(1);
+	});
+
+	document.getElementById('table-clear-all-button').addEventListener("click", tableClearAll);
+	document.getElementById('table-delete-all-button').addEventListener("click", tableInitialize);
 }
 
 // Create an empty array and set it to our local storage for list-queries.
@@ -184,9 +196,21 @@ function listGetCheckboxes() {
 }
 
 function listSearchAll() {
+
+	var queries = [];
+	var checkboxes = JSON.parse(localStorage.getItem('list-checkboxes'));
+	for (var i = 0; i < listNumQueries; i++) {
+		if (checkboxes[i] == 1 && document.getElementById('list-cell-' + i).textContent != "") {
+			queries.push(document.getElementById('list-cell-' + i).textContent);
+		}
+	}
+
+	chrome.runtime.sendMessage(queries);
+
+	/*
 	for (var i = 0; i < listNumQueries; i++) {
 		listPerformSearch(i);
-	}
+	}*/
 }
 
 function listClearAll() {
@@ -827,6 +851,29 @@ function tableSearchRowOrCol(rowOrCol, num) {
 
 	tableSaveState();
 
+	var queries = [];
+	var rowCheckboxes = JSON.parse(localStorage.getItem('table-row-checkboxes'));
+	var colCheckboxes = JSON.parse(localStorage.getItem('table-col-checkboxes'));
+
+	if (rowOrCol == 0) {
+		for (var i = 0; i < tableNumQueries.cols; i++) {
+			var query = document.getElementById('table-cell-' + num + '-' + i).textContent;
+			if (colCheckboxes[i] == 1 && rowCheckboxes[num] == 1 && query != "") {
+				queries.push(query);
+			}
+		}
+	} else if (rowOrCol == 1) {
+		for (var j = 0; j < tableNumQueries.rows; j++) {
+			var query = document.getElementById('table-cell-' + j + '-' + num).textContent;
+			if (rowCheckboxes[j] == 1 && colCheckboxes[num] == 1 && query != "") {
+				queries.push(query);
+			}
+		}
+	}
+
+	chrome.runtime.sendMessage(queries);
+
+/*
 	var rowCheckboxes = document.getElementsByClassName('table-row-checkboxes');
 	var colCheckboxes = document.getElementsByClassName('table-col-checkboxes');
 	var url = 'https://google.com/search?q=';
@@ -856,7 +903,7 @@ function tableSearchRowOrCol(rowOrCol, num) {
 		}
 
 	}
-
+*/
 }
 
 function tableClearRowOrCol(rowOrCol, num) {
@@ -1136,6 +1183,14 @@ function tableSetCheckRowOrColState(className) {
 
 }
 
+function tableClearAll() {
+	document.getElementById('table-row-check-all-checkbox').checked = false;
+	document.getElementById('table-col-check-all-checkbox').checked = false;
+	for (var i = 0; i < tableNumQueries.rows; i++) {
+		tableClearRowOrCol(0, i);
+	}
+}
+
 function tableAddNumMoreSearches(rowOrCol) {
 
 	var str = "";
@@ -1158,6 +1213,40 @@ function tableAddNumMoreSearches(rowOrCol) {
 		}
 	}
 
+
+}
+
+function tableToggleSearchAll() {
+	$('#table-search-all-dropdown-content').toggle();
+}
+
+function tableSearchAll(rowOrCol) {
+
+	var queries = [];
+	var rowCheckboxes = JSON.parse(localStorage.getItem('table-row-checkboxes'));
+	var colCheckboxes = JSON.parse(localStorage.getItem('table-col-checkboxes'));
+
+	if (rowOrCol == 0) {
+		for (var i = 0; i < tableNumQueries.rows; i++) {
+			for (var j = 0; j < tableNumQueries.cols; j++) {
+				if (rowCheckboxes[i] == 1 && colCheckboxes[j] == 1 && 
+					document.getElementById('table-cell-' + i + '-' + j).textContent != "") {
+					queries.push(document.getElementById('table-cell-' + i + '-' + j).textContent);
+				}
+			}
+		}
+	} else if(rowOrCol == 1) {
+		for (var i = 0; i < tableNumQueries.cols; i++) {
+			for (var j = 0; j < tableNumQueries.rows; j++) {
+				if (colCheckboxes[i] == 1 && rowCheckboxes[j] == 1 && 
+					document.getElementById('table-cell-' + j + '-' + i).textContent != "") {
+					queries.push(document.getElementById('table-cell-' + j + '-' + i).textContent);
+				}
+			}
+		}
+	}
+
+	chrome.runtime.sendMessage(queries);
 
 }
 

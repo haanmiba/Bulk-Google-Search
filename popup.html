@@ -63,9 +63,18 @@
 						<span id="table-add-num-more-cols"><input type="number" id="table-add-num-more-cols-input" placeholder="Add # more columns"><span class="divider"></span><a id="table-add-num-more-cols-button" class="btn btn-primary" href="#">Submit</a></span>
 				</div>
 				<div id="table-buttons">
-					<a id="table-search-all-button" class="btn btn-success" href="#">Search All</a>
+					<div id="table-search-all-dropdown-container">
+						<a id="table-search-all-button" class="btn btn-success dropdown-toggle" href="#">Search All</a>
+						<div id="table-search-all-dropdown-content">
+							<a id="table-search-all-row-by-row-button" href="#">Row-by-Row</a>
+							<a id="table-search-all-col-by-col-button" href="#">Column-by-Column</a>
+						</div>
+					</div>
 					<a id="table-clear-all-button" class="btn btn-warning"href="#">Clear All</a>
 					<a id="table-delete-all-button" class="btn btn-danger" href="#">Delete All</a>
+				</div>
+				<div id="table-advanced-button-container">
+					<a id="table-advanced-button" href="#">Advanced</a><span class="caret"></span>
 				</div>
 			</div>
 		</div>

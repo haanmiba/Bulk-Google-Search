@@ -12,15 +12,8 @@
 		"default_title": "Bulk Query"
 	},
 
-	"content_scripts": [ {
-
-		"matches": ["https://www.google.com/*"],
-		"js": ["js/jquery-3.2.1.min.js", "js/bootstrap.min.js"]
-
-	}],
-
 	"background": {
-		"scripts": ["js/main.js"]
+		"scripts": ["js/background.js"]
 	},
 
 	"icons": {

@@ -65,3 +65,31 @@ table, th, td {
 #list-buttons, #table-buttons {
 	padding: .5rem;
 }
+
+#table-buttons * {
+	display: inline-block;
+}
+
+#table-search-all-dropdown-content {
+	display: none;
+	position: absolute;
+	background-color: #2e9c32;
+    min-width: 160px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    z-index: 1;
+}
+
+#table-search-all-dropdown-content a {
+	display: block;
+	color: white;
+    padding: 12px 16px;
+    text-decoration: none;
+}
+
+#table-search-all-dropdown-content a:hover {
+	background-color: #257528;
+}
+
+.show {
+	display: block;
+}
