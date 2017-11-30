@@ -74,6 +74,13 @@ function initializeProgram() {
 	document.getElementById('list-search-all-button').addEventListener("click", listSearchAll);
 	document.getElementById('list-clear-all-button').addEventListener("click", listClearAll);
 	document.getElementById('list-delete-all-button').addEventListener("click", listDeleteAll);
+
+	document.getElementById('table-add-num-more-rows-button').addEventListener("click", function() {
+		tableAddNumMoreSearches(0);
+	});
+	document.getElementById('table-add-num-more-cols-button').addEventListener("click", function() {
+		tableAddNumMoreSearches(1);
+	});
 }
 
 // Create an empty array and set it to our local storage for list-queries.
@@ -1126,6 +1133,31 @@ function tableSetCheckRowOrColState(className) {
 	}
 
 	tableSaveState();
+
+}
+
+function tableAddNumMoreSearches(rowOrCol) {
+
+	var str = "";
+
+	if (rowOrCol == 0) {
+		str = 'row';
+	} else if (rowOrCol == 1) {
+		str = 'col';
+	}
+
+	var num = parseInt(document.getElementById('table-add-num-more-' + str + 's-input').value);
+
+	document.getElementById('table-add-num-more-' + str + 's-input').value = "";
+
+	for (var i = 0; i < num; i++) {
+		if (rowOrCol == 0) {
+			tableAddRow();
+		} else if (rowOrCol == 1) {
+			tableAddColumn();
+		}
+	}
+
 
 }
 

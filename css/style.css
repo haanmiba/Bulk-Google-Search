@@ -22,7 +22,7 @@ table, th, td {
 	padding-top: .5rem;
 }
 
-#list-cells, #table-cells {
+#list-cells, #table-cells, #table-add-num-more-rows, #table-add-num-more-cols {
 	padding: .5rem;
 }
 
@@ -60,4 +60,8 @@ table, th, td {
 .divider {
 	padding-left: .2rem;
 	padding-right: .2rem;
+}
+
+#list-buttons, #table-buttons {
+	padding: .5rem;
 }
