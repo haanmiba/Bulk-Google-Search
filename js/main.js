@@ -116,6 +116,7 @@ function toggle(num) {
 	var tts = document.getElementById('table-tab-to-be-selected');
 	var lp = document.getElementById('list-panel');
 	var tp = document.getElementById('table-panel');
+	var extensionWindow = document.getElementById('extension-window');
 
 	if (num == 0) {
 		lta.style.display = 'inline-block';
@@ -124,6 +125,7 @@ function toggle(num) {
 		tts.style.display = 'inline-block';
 		lp.style.display = 'block';
 		tp.style.display = 'none';
+		extensionWindow.style.width = "500px";
 	} else {
 		lta.style.display = 'none';
 		lts.style.display = 'inline-block';
@@ -131,7 +133,7 @@ function toggle(num) {
 		tts.style.display = 'none';
 		lp.style.display = 'none';
 		tp.style.display = 'block';
-
+		extensionWindow.style.width = "800px";
 	}
 }
 
@@ -243,7 +245,7 @@ function listRefresh() {
 
 	}
 
-	lb.innerHTML += '<tr><td colspan="3"><input type="number" id="list-num-more-searches" placeholder="Add # more rows"><a id="list-add-num-more-searches-button" class="btn btn-primary" href="#">Submit</a></td></tr>';
+	lb.innerHTML += '<tr><td colspan="3"><input type="number" id="list-num-more-searches" placeholder="Add # more rows"><span class="divider"></span><a id="list-add-num-more-searches-button" class="btn btn-primary" href="#">Submit</a></td></tr>';
 
 	listInitializeCheckboxes();
 
@@ -413,7 +415,7 @@ function listPerformSearch(num) {
 
 	var query = document.getElementById('list-cell-' + num).textContent;
 
-	if (query == "") {
+	if (query == "" || !checkboxes[num].checked) {
 		return false;
 	}
 

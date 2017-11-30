@@ -57,3 +57,7 @@ table, th, td {
 	text-align: center;
 }
 
+.divider {
+	padding-left: .2rem;
+	padding-right: .2rem;
+}
