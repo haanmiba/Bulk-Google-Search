@@ -104,7 +104,37 @@ form {
 	padding: .5rem;
 }
 
+.table-smart-search-button {
+	padding-right: .2rem;
+	padding-left: .2rem;
+}
+
 label {
 	padding-left: .2rem;
 	padding-right: .2rem;
+}
+
+.light-cyan-panel {
+	background-color: #cafdff;
+}
+
+.light-green-panel {
+	background-color: #98e295;
+}
+
+.light-yellow-panel {
+	background-color: #f9fdc6;
+}
+
+.light-red-panel {
+	background-color: #f8b6b6;
+}
+
+.panel-content {
+	padding: .5rem;
+}
+
+.textarea-padding {
+	padding-top: .2rem;
+	padding-bottom: .2rem;
 }
