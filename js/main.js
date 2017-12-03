@@ -75,6 +75,9 @@ function initializeProgram() {
 	document.getElementById('list-search-all-button').addEventListener("click", listSearchAll);
 	document.getElementById('list-clear-all-button').addEventListener("click", listClearAll);
 	document.getElementById('list-delete-all-button').addEventListener("click", listDeleteAll);
+	document.getElementById('list-advanced-button').addEventListener("click", function() {
+		togglePanel('#list-advanced-panel');
+	});
 
 	document.getElementById('table-add-num-more-rows-button').addEventListener("click", function() {
 		tableAddNumMoreSearches(0);
@@ -83,7 +86,9 @@ function initializeProgram() {
 		tableAddNumMoreSearches(1);
 	});
 
-	document.getElementById('table-search-all-button').addEventListener("click", tableToggleSearchAll);
+	document.getElementById('table-search-all-button').addEventListener("click", function() {
+		togglePanel('#table-search-all-dropdown-content');
+	});
 	document.getElementById('table-search-all-row-by-row-button').addEventListener("click", function() {
 		tableSearchAll(0);
 	});
@@ -207,10 +212,6 @@ function listSearchAll() {
 
 	chrome.runtime.sendMessage(queries);
 
-	/*
-	for (var i = 0; i < listNumQueries; i++) {
-		listPerformSearch(i);
-	}*/
 }
 
 function listClearAll() {
@@ -300,6 +301,8 @@ function listAddNumMoreSearches() {
 	for (var i = 0; i < num; i++) {
 		listAddSearchQuery();
 	}
+
+	listSetCheckAllState();
 
 }
 
@@ -635,7 +638,7 @@ function tableRefresh() {
 		ttr.innerHTML += '<td class="table-cell-checkbox"><input class="table-col-checkboxes table-checkboxes" type="checkbox"></td>';
 	}
 
-	ttr.innerHTML += '<td></td></tr>';
+	ttr.innerHTML += '<td></td><td></td></tr>';
 
 	tb.innerHTML += '<tr id="table-header-row">' + 
 						'<td class="table-cell-checkbox">' + 
@@ -651,7 +654,7 @@ function tableRefresh() {
 		th.innerHTML += '<th id="table-header-' + i + '" class="table-headers" contenteditable>' + tableHeaders[i] + '</th>';
 	}
 
-	th.innerHTML += '<td></td></tr>';
+	th.innerHTML += '<td></td><td></td></tr>';
 
 	for (var i = 0; i < tableNumQueries.rows; i++) {
 		tb.innerHTML += '<tr id="table-row-' + i + '"></tr>';
@@ -673,7 +676,17 @@ function tableRefresh() {
 							'<a id="table-row-clear-button-' + i + '" class="icon-buttons" href="#"><img class="icon-image" src="images/clear-button-image.png"></a>' + 
 							'<a id="table-row-delete-button-' + i + '" class="icon-buttons" href="#"><img class="icon-image" src="images/delete-button-image.png"></a>' + 
 							'</span>' + 
+							'</td>' + 
+							'<td class="table-smart-search-cell">' +
+							'<a id="table-smart-search-button-' + i + '" class="btn btn-success dropdown-toggle">Format Search</a>' +
+							'<div id="table-smart-search-panel-' + i + '" class="toggleable green-dropdown-panel">' +
+							'</div>' +
 							'</td>';
+
+		var smartPanel = document.getElementById('table-smart-search-panel-' + i);
+		smartPanel.innerHTML +=	'<form id="table-smart-search-form-' + i + '">' + 
+								'</form>';
+
 	}
 
 	tb.innerHTML +=	'<tr id="table-bottom-row"><td></td><td></td></tr>';
@@ -690,7 +703,7 @@ function tableRefresh() {
 							'</td>';
 	}
 
-	tbr.innerHTML += '<td></td>';
+	tbr.innerHTML += '<td></td><td></td>';
 
 	tableInitializeCheckboxes();
 
@@ -705,6 +718,7 @@ function tableRefresh() {
 
 	for (var i = 0; i < tableNumQueries.rows; i++) {
 		tableAddEventListenersToButtons(0, i);
+		tableSetSmartSearch(i);
 	}
 
 	for (var j = 0; j < tableNumQueries.cols; j++) {
@@ -712,6 +726,45 @@ function tableRefresh() {
 	}
 
 	tableSaveState();
+
+}
+
+function tableSetSmartSearch(i) {
+
+	var checkboxes = document.getElementsByClassName('table-col-checkboxes');
+
+	var smartPanelForm = document.getElementById('table-smart-search-form-' + i);
+	var numOfCheckboxes = 0;
+	smartPanelForm.innerHTML = "";
+	for (var j = 0; j < tableNumQueries.cols; j++) {
+		var tableCell = document.getElementById('table-cell-' + i + '-' + j);
+		if (tableCell.textContent != "") {
+			smartPanelForm.innerHTML += '<input id="checkbox-for-cell-' + i + '-' + j + '" value="' + tableCell.textContent +'" type="checkbox" checked><label for="checkbox-for-cell-' + i + '-' + j + '">' + tableCell.textContent + '</label><br>';
+			numOfCheckboxes++;
+		}
+	}
+	smartPanelForm.innerHTML += '<label>Delimeter: </label><input id="table-smart-search-delimeter-' + i + '" type="text" size="1" maxlength="1">' +
+	'<br><input type="button" id="table-perform-smart-search-button-' + i + '" class="btn btn-primary" value="Smart Search"/>';
+	document.getElementById('table-perform-smart-search-button-' + i).addEventListener("click", function() {
+		tableSmartSearch(i, numOfCheckboxes);
+	});
+}
+
+function tableSmartSearch(i, numOfCheckboxes) {
+
+	var str = "";
+
+	for (var j = 0; j < numOfCheckboxes; j++) {
+		if (document.getElementById('checkbox-for-cell-' + i + '-' + j).checked) {
+			str += document.getElementById('checkbox-for-cell-' + i + '-' + j).value;
+		}
+		if (j != (numOfCheckboxes-1)) {
+			str += document.getElementById('table-smart-search-delimeter-' + i).value;
+		}
+	}
+
+	
+	searchByString(str);
 
 }
 
@@ -767,6 +820,7 @@ function tableAddEventListeners(i, j) {
 		tableSetCheckRowOrColState('table-row-checkboxes');
 		tableSetCheckRowOrColState('table-col-checkboxes');
 		tableSetCheckAllState();
+		tableSetSmartSearch(i);
 	});
 
 }
@@ -777,6 +831,9 @@ function tableAddEventListenersToButtons(rowOrCol, num) {
 
 	if (rowOrCol == 0) {
 		stringRC = 'row';
+		document.getElementById('table-smart-search-button-' + num).addEventListener("click", function() {
+			togglePanel('#table-smart-search-panel-' + num);
+		});
 	} else if (rowOrCol == 1) {
 		stringRC = 'col';
 	}
@@ -873,37 +930,6 @@ function tableSearchRowOrCol(rowOrCol, num) {
 
 	chrome.runtime.sendMessage(queries);
 
-/*
-	var rowCheckboxes = document.getElementsByClassName('table-row-checkboxes');
-	var colCheckboxes = document.getElementsByClassName('table-col-checkboxes');
-	var url = 'https://google.com/search?q=';
-
-	if (rowOrCol == 0) {
-
-		for (var i = 0; i < tableNumQueries.cols; i++) {
-
-			var query = document.getElementById('table-cell-' + num + '-' + i).textContent;
-
-			if (colCheckboxes[i].checked && rowCheckboxes[num].checked && query != "") {
-				window.open(url + encodeHTML(query), '_blank');
-			}
-
-		}
-
-	} else if (rowOrCol == 1) {
-
-		for (var j = 0; j < tableNumQueries.rows; j++) {
-
-			var query = document.getElementById('table-cell-' + j + '-' + num).textContent;
-
-			if (rowCheckboxes[j].checked && colCheckboxes[num].checked && query != "") {
-				window.open(url + encodeHTML(query), '_blank');
-			}
-
-		}
-
-	}
-*/
 }
 
 function tableClearRowOrCol(rowOrCol, num) {
@@ -1213,11 +1239,15 @@ function tableAddNumMoreSearches(rowOrCol) {
 		}
 	}
 
+	tableSetCheckRowOrColState('table-row-checkboxes');
+	tableSetCheckRowOrColState('table-col-checkboxes');
+	tableSetCheckAllState();
 
 }
 
-function tableToggleSearchAll() {
-	$('#table-search-all-dropdown-content').toggle();
+function togglePanel(id) {
+	console.log('Test');
+	$(id).toggle();
 }
 
 function tableSearchAll(rowOrCol) {
@@ -1248,6 +1278,10 @@ function tableSearchAll(rowOrCol) {
 
 	chrome.runtime.sendMessage(queries);
 
+}
+
+function searchByString(str) {
+	window.open('https://www.google.com/search?q=' + encodeHTML(str), '_blank');
 }
 
 // Converts str special characters (+, -, #, $, ...) to hex for searching. Example: 'C++' will become 'C%2B%2B'

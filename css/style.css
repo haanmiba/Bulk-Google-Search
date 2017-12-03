@@ -70,11 +70,17 @@ table, th, td {
 	display: inline-block;
 }
 
-#table-search-all-dropdown-content {
+.toggleable {
 	display: none;
-	position: absolute;
+	position: relative;
+}
+
+#table-search-all-dropdown-content, .green-dropdown-panel {
+	display: none;
+	position: relative;
 	background-color: #2e9c32;
     min-width: 160px;
+    max-width: 300px;
     box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
     z-index: 1;
 }
@@ -92,4 +98,13 @@ table, th, td {
 
 .show {
 	display: block;
+}
+
+form {
+	padding: .5rem;
+}
+
+label {
+	padding-left: .2rem;
+	padding-right: .2rem;
 }
