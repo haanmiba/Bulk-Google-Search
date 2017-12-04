@@ -82,8 +82,13 @@ function initializeProgram() {
 		togglePanel('#list-advanced-panel');
 	});
 	document.getElementById('list-add-url-button').addEventListener("click", function() {
+
+		if (document.getElementById('list-set-url-panel').style.display == 'block') {
+			togglePanel(('#list-set-url-panel'));
+		}
 		togglePanel('#list-add-url-panel');
 	});
+	document.getElementById('list-add-url-submit-button').addEventListener("click", addURL);
 	document.getElementById('list-set-url-button').addEventListener("click", function() {
 		if (document.getElementById('list-add-url-panel').style.display == 'block') {
 			togglePanel(('#list-add-url-panel'));
@@ -167,11 +172,32 @@ function initializeProgram() {
 
 }
 
+function addURL() {
+	var addingURL = {
+		name: document.getElementById('list-add-url-name-input').value,
+		url: document.getElementById('list-add-url-input').value
+	}
+
+	var expression = /[-a-zA-Z0-9@:%_\+.~#?&//=]{2,256}\.[a-z]{2,4}\b(\/[-a-zA-Z0-9@:%_\+.~#?&//=]*)?/gi;
+	var regex = new RegExp(expression);
+
+	if (addingURL.url.indexOf('~query~') == -1 || !addingURL.name || !addingURL.url) {
+		return false;
+	}
+
+	var savedURLs = JSON.parse(localStorage.getItem('saved-urls'));
+	savedURLs.push(addingURL);
+	localStorage.setItem('saved-urls', JSON.stringify(savedURLs));
+
+	refreshSavedURLs();
+
+}
+
 function refreshSavedURLs() {
 	var savedURLs = JSON.parse(localStorage.getItem('saved-urls'));
 	document.getElementById('list-set-url-panel').innerHTML = "";
 	for (var i = 0; i < savedURLs.length; i++) {
-		document.getElementById('list-set-url-panel').innerHTML += '<div class="list-saved-url-container"><div class="panel-content"><a id="list-saved-url-' + i + '-button" class="alignleft" href="#">' + savedURLs[i].name +'</a><a id="list-delete-saved-list-' + i + '" class="list-delete-saved-list alignright" href="#">Delete</a><div class="clear"></div></div></div>';
+		document.getElementById('list-set-url-panel').innerHTML += '<div class="list-saved-url-container"><div class="panel-content"><a id="list-saved-url-' + i + '-button" class="alignleft" href="#">' + savedURLs[i].name +'</a><a id="list-delete-saved-url-' + i + '-button" class="list-delete-saved-list alignright" href="#">Delete</a><div class="clear"></div></div></div>';
 	}
 	for (var i = 0; i < savedURLs.length; i++) {
 		setURLEventListeners(i);
@@ -182,6 +208,16 @@ function setURLEventListeners(i) {
 	document.getElementById('list-saved-url-' + i + '-button').addEventListener("click", function() {
 		setURL(i);
 	});
+	document.getElementById('list-delete-saved-url-' + i + '-button').addEventListener("click", function() {
+		deleteSavedURL(i);
+	});
+}
+
+function deleteSavedURL(i) {
+	var savedURLs = JSON.parse(localStorage.getItem('saved-urls'));
+	savedURLs.splice(i, 1);
+	localStorage.setItem('saved-urls', JSON.stringify(savedURLs));
+	refreshSavedURLs();
 }
 
 function setURL(i) {
@@ -203,7 +239,7 @@ function listRefreshSavedLists() {
 	var savedLists = JSON.parse(localStorage.getItem('list-saved-lists'));
 	document.getElementById('list-list-of-saved-lists-container').innerHTML = "";
 	for (var i = 0; i < savedLists.length; i++) {
-		document.getElementById('list-list-of-saved-lists-container').innerHTML += '<div class="list-saved-list-container"><div class="panel-content"><a id="list-delete-saved-list-' + i + '" class="list-delete-saved-list alignright" href="#">Delete</a><a id="list-saved-list-' + i + '-button" class="alignleft" href="#">' + savedLists[i].name +'</a></div><div class="clear"></div></div>';
+		document.getElementById('list-list-of-saved-lists-container').innerHTML += '<div class="list-saved-list-container"><a id="list-delete-saved-list-' + i + '" class="list-delete-saved-list alignright" href="#">Delete</a><a id="list-saved-list-' + i + '-button" class="alignleft" href="#">' + savedLists[i].name +'</a><div class="clear"></div></div>';
 	}
 	for (var i = 0; i < savedLists.length; i++) {
 		listSavedListEventListeners(i);
@@ -500,8 +536,8 @@ function listSearchCheckedOrUnchecked(checkedOrUnchecked) {
 		}
 	}
 
-	//performSearchBackground(queries);
-	chrome.runtime.sendMessage(queries);
+	performSearchBackground(queries);
+	//chrome.runtime.sendMessage(queries);
 
 }
 

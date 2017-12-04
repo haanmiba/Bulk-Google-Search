@@ -139,12 +139,38 @@ table, th, td {
     text-decoration: none;
 }
 
-#list-list-of-saved-lists-container .list-delete-saved-list {
-	color: blue;
-}
-
 #list-list-of-saved-lists-container div:hover {
 	background-color: #206b96;
+}
+
+#list-set-url-panel {
+	display: none;
+	position: relative;
+	background-color: #eeeeee;
+    min-width: 160px;
+    max-width: 400px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    z-index: 1;
+    clear: both;
+}
+
+#list-set-url-panel a {
+	color: black;
+    padding: 12px 16px;
+    text-decoration: none;
+}
+
+#list-set-url-panel a:hover {
+	color: white;
+}
+
+#list-set-url-panel div {
+	color: gray;
+    text-decoration: none;
+}
+
+#list-set-url-panel div:hover {
+	background-color: #696969;
 }
 
 form {
