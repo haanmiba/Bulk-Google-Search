@@ -85,7 +85,24 @@ table, th, td {
     z-index: 1;
 }
 
+#list-format-search-dropdown-content {
+	display: none;
+	position: relative;
+	background-color: #2e9c32;
+    min-width: 160px;
+    max-width: 300px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    z-index: 1;
+}
+
 #table-search-all-dropdown-content a {
+	display: block;
+	color: white;
+    padding: 12px 16px;
+    text-decoration: none;
+}
+
+#list-format-search-dropdown-content a {
 	display: block;
 	color: white;
     padding: 12px 16px;
@@ -96,8 +113,38 @@ table, th, td {
 	background-color: #257528;
 }
 
-.show {
-	display: block;
+#list-format-search-dropdown-content a:hover {
+	background-color: #257528;
+}
+
+#list-list-of-saved-lists-container {
+	display: none;
+	position: relative;
+	background-color: #3eb2cf;
+    min-width: 160px;
+    max-width: 400px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    z-index: 1;
+    clear: both;
+}
+
+#list-list-of-saved-lists-container a {
+	color: white;
+    padding: 12px 16px;
+    text-decoration: none;
+}
+
+#list-list-of-saved-lists-container div {
+	color: white;
+    text-decoration: none;
+}
+
+#list-list-of-saved-lists-container .list-delete-saved-list {
+	color: blue;
+}
+
+#list-list-of-saved-lists-container div:hover {
+	background-color: #206b96;
 }
 
 form {
@@ -107,11 +154,16 @@ form {
 .table-smart-search-button {
 	padding-right: .2rem;
 	padding-left: .2rem;
+	display: inline-block;
 }
 
 label {
 	padding-left: .2rem;
 	padding-right: .2rem;
+}
+
+.light-gray-panel {
+	background-color: #d3d3d3;
 }
 
 .light-cyan-panel {
@@ -134,7 +186,31 @@ label {
 	padding: .5rem;
 }
 
+.btn-white {
+	color: #000000;
+	background-color: #ffffff;
+}
 .textarea-padding {
 	padding-top: .2rem;
 	padding-bottom: .2rem;
+}
+
+.pad-5rem {
+	padding: .5rem;
+}
+
+.alignleft {
+	float: left;
+}
+
+.alignright {
+	float: right;
+}
+
+.clear {
+	clear: both;
+}
+
+.font-size-s {
+	font-size: 8pt;
 }

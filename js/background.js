@@ -1,8 +1,37 @@
 chrome.runtime.onMessage.addListener(function(msg) {
+	/*
 	var data = msg;
 	for (var i = 0; i < data.length; i++) {
-		window.open('https://google.com/search?q=' + encodeHTML(data[i]));
+		if (data[i] != "") {
+			window.open('https://www.google.com/search?q=' + encodeHTML(data[i]), '_blank');
+		}
+	}*/
+	
+
+	
+	
+	var jsonData = JSON.parse(msg);
+	var data = jsonData.queries;
+
+	/*
+			var urlToOpen = jsonData.website.split('~query~').join(encodeHTML(data[0]));
+			alert(urlToOpen);
+			window.open(urlToOpen, '_blank');	*/		
+
+	for (var i = 0; i < data.length; i++) {
+		if (data[i] != "") {
+			var urlToOpen = jsonData.website.split('~query~').join(encodeHTML(data[i]));
+			window.open(urlToOpen, '_blank');			
+		}
 	}
+
+	/*
+	for (var i = 0; i < data.length; i++) {
+		if (data[i] != "") {
+			var urlToOpen = jsonData.website.split('~query~').join(encodeHTML(data[i]));
+			window.open(urlToOpen, '_blank');			
+		}
+	}*/
 });
 
 // Converts str special characters (+, -, #, $, ...) to hex for searching. Example: 'C++' will become 'C%2B%2B'

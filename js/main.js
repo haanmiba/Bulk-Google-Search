@@ -7,6 +7,8 @@ var tableNumQueries = {
 	cols: 0
 }
 
+var url = 'https://google.com/search?q=~query~';
+
 // When the page loads, initialize the event handlers for our buttons at the bottom of the popup window.
 window.addEventListener("load", initializeProgram);
 
@@ -79,13 +81,38 @@ function initializeProgram() {
 	document.getElementById('list-advanced-button').addEventListener("click", function() {
 		togglePanel('#list-advanced-panel');
 	});
+	document.getElementById('list-add-url-button').addEventListener("click", function() {
+		togglePanel('#list-add-url-panel');
+	});
+	document.getElementById('list-set-url-button').addEventListener("click", function() {
+		if (document.getElementById('list-add-url-panel').style.display == 'block') {
+			togglePanel(('#list-add-url-panel'));
+		}
+		togglePanel('#list-set-url-panel');
+	});
+	document.getElementById('list-invert-checked-button').addEventListener("click", listInvertChecked);
 	document.getElementById('list-search-checked-button').addEventListener("click", function() {
 		listSearchCheckedOrUnchecked(1);
 	});
 	document.getElementById('list-search-unchecked-button').addEventListener("click", function() {
 		listSearchCheckedOrUnchecked(0);
 	});
-	document.getElementById('list-format-search-button').addEventListener("click", listFormatSearch);
+	
+	document.getElementById('list-format-search-open-panel-button').addEventListener("click", function() {
+		togglePanel('#list-format-search-panel');
+	});
+	document.getElementById('list-format-search-button').addEventListener("click", function() {
+		togglePanel('#list-format-search-dropdown-content');
+	});
+	document.getElementById('list-format-search-checked').addEventListener("click", function() {
+		listFormatSearchCheckedOrUnchecked(1);
+	});
+	document.getElementById('list-format-search-unchecked').addEventListener("click", function() {
+		listFormatSearchCheckedOrUnchecked(0);
+	});
+	document.getElementById('list-format-search-all').addEventListener("click", function() {
+		listFormatSearch();
+	});
 
 	document.getElementById('list-clear-checked-button').addEventListener("click", function() {
 		listClearCheckedOrUnchecked(1);
@@ -100,7 +127,13 @@ function initializeProgram() {
 	document.getElementById('list-delete-unchecked-button').addEventListener("click", function() {
 		listDeleteCheckedOrUnchecked(0);
 	});
-
+	document.getElementById('list-delete-empty-cells-button').addEventListener("click", function() {
+		listDeleteEmptyCells();
+	});
+	document.getElementById('list-save-list-button').addEventListener("click", listSaveList);
+	document.getElementById('list-load-list-button').addEventListener("click", function() {
+		togglePanel('#list-list-of-saved-lists-container');
+	});
 
 
 
@@ -129,14 +162,131 @@ function initializeProgram() {
 		togglePanel('#table-advanced-panel');
 	});
 
+	refreshSavedURLs();
+	listRefreshSavedLists();
+
+}
+
+function refreshSavedURLs() {
+	var savedURLs = JSON.parse(localStorage.getItem('saved-urls'));
+	document.getElementById('list-set-url-panel').innerHTML = "";
+	for (var i = 0; i < savedURLs.length; i++) {
+		document.getElementById('list-set-url-panel').innerHTML += '<div class="list-saved-url-container"><div class="panel-content"><a id="list-saved-url-' + i + '-button" class="alignleft" href="#">' + savedURLs[i].name +'</a><a id="list-delete-saved-list-' + i + '" class="list-delete-saved-list alignright" href="#">Delete</a><div class="clear"></div></div></div>';
+	}
+	for (var i = 0; i < savedURLs.length; i++) {
+		setURLEventListeners(i);
+	}
+}
+
+function setURLEventListeners(i) {
+	document.getElementById('list-saved-url-' + i + '-button').addEventListener("click", function() {
+		setURL(i);
+	});
+}
+
+function setURL(i) {
+	var savedURLs = JSON.parse(localStorage.getItem('saved-urls'));
+	url = savedURLs[i].url;
+}
+
+function listInvertChecked() {
+	var checkboxes = JSON.parse(localStorage.getItem('list-checkboxes'));
+	for (var i = 0; i < checkboxes.length; i++) {
+		checkboxes[i] = (-1) * (checkboxes[i] - 1);
+	}
+	localStorage.setItem('list-checkboxes', JSON.stringify(checkboxes));
+	listRefresh();
+	listSetCheckAllState();
+}
+
+function listRefreshSavedLists() {
+	var savedLists = JSON.parse(localStorage.getItem('list-saved-lists'));
+	document.getElementById('list-list-of-saved-lists-container').innerHTML = "";
+	for (var i = 0; i < savedLists.length; i++) {
+		document.getElementById('list-list-of-saved-lists-container').innerHTML += '<div class="list-saved-list-container"><div class="panel-content"><a id="list-delete-saved-list-' + i + '" class="list-delete-saved-list alignright" href="#">Delete</a><a id="list-saved-list-' + i + '-button" class="alignleft" href="#">' + savedLists[i].name +'</a></div><div class="clear"></div></div>';
+	}
+	for (var i = 0; i < savedLists.length; i++) {
+		listSavedListEventListeners(i);
+	}
+}
+
+function listSavedListEventListeners(i) {
+
+	document.getElementById('list-saved-list-' + i + '-button').addEventListener("click", function() {
+		listLoadList(i);
+	});
+	document.getElementById('list-delete-saved-list-' + i).addEventListener("click", function() {
+		listDeleteSavedList(i);
+	});
+}
+
+function listDeleteSavedList(i) {
+
+	console.log('test');
+
+	var savedLists = JSON.parse(localStorage.getItem('list-saved-lists'));
+
+	savedLists.splice(i, 1);
+
+	localStorage.setItem('list-saved-lists', JSON.stringify(savedLists));
+
+	listRefreshSavedLists();
+
+}
+
+function listSaveList() {
+	var listSave = {
+		name: document.getElementById('list-name-cell').textContent,
+		queries: JSON.parse(localStorage.getItem('list-queries'))
+	}
+
+	console.log(listSave);
+
+	var savedLists = JSON.parse(localStorage.getItem('list-saved-lists'));
+	var listAlreadyExists = false;
+	for (var i = 0; i < savedLists.length; i++) {
+		if (savedLists[i].name == listSave.name) {
+			savedLists[i] = listSave;
+			listAlreadyExists = true;
+			break;
+		}
+	}
+
+	if (!listAlreadyExists) {
+		savedLists.push(listSave);		
+	}
+
+	localStorage.setItem('list-saved-lists', JSON.stringify(savedLists));
+
+	listRefreshSavedLists();
+
+}
+
+
+function listLoadList(num) {
+
+	var savedLists = JSON.parse(localStorage.getItem('list-saved-lists'));
+
+	localStorage.setItem('list-name', savedLists[num].name);
+	localStorage.setItem('list-queries', JSON.stringify(savedLists[num].queries));
+	listNumQueries = savedLists[num].queries.length;
+
+	listRefresh();
+
+	for (var i = 0; i < listNumQueries; i++) {
+		listSetCheck(i);
+	}
+
+	listSetCheckAllState();
+
 }
 
 function listFormatSearch() {
+	var queries = [];
 	var textContent = document.getElementById('list-search-textarea').value;
 	var listNameUsed = '~' + document.getElementById('list-name-cell').textContent + '~';
 
 	if (textContent.indexOf(listNameUsed) !== -1) {
-		var queries = [];
 		var textSplit = textContent.split(listNameUsed).join("«");
 		for (var i = 0; i < listNumQueries; i++) {
 			var str = textSplit;
@@ -146,7 +296,53 @@ function listFormatSearch() {
 				queries.push(str);
 			}
 		}
-		chrome.runtime.sendMessage(queries);
+		var data = {
+			data: queries,
+			url
+		}
+		performSearchBackground(queries);
+
+		//chrome.runtime.sendMessage(queries);
+		return true;
+	}
+
+	queries.push(textContent);
+
+	if (textContent != "") {
+		performSearchBackground(queries);
+		//chrome.runtime.sendMessage(queries);		
+	}
+
+}
+
+function listFormatSearchCheckedOrUnchecked(checkedOrUnchecked) {
+	var queries = [];
+	var textContent = document.getElementById('list-search-textarea').value;
+	var listNameUsed = '~' + document.getElementById('list-name-cell').textContent + '~';
+	var checkboxes = JSON.parse(localStorage.getItem('list-checkboxes'));
+	if (textContent.indexOf(listNameUsed) !== -1) {
+		var textSplit = textContent.split(listNameUsed).join("«");
+		console.log(checkboxes[0]);
+		for (var i = 0; i < listNumQueries; i++) {
+			if (checkboxes[i] == checkedOrUnchecked) {
+				var str = textSplit;
+				var cellContent = document.getElementById('list-cell-'+i).textContent;
+				if (cellContent != "") {
+					str = str.replace("«", document.getElementById('list-cell-'+i).textContent);
+					queries.push(str);
+				}
+			}
+		}
+		performSearchBackground(queries);
+		//chrome.runtime.sendMessage(queries);
+		return true;
+	}
+
+	queries.push(textContent);
+
+	if (textContent != "") {
+		performSearchBackground(queries);
+		//chrome.runtime.sendMessage(queries);		
 	}
 
 }
@@ -164,6 +360,25 @@ function listResetLocalStorage() {
 
 	var listName = 'List Name';
 	localStorage.setItem('list-name', listName);
+
+	var savedLists = [];
+	if (localStorage.getItem('list-saved-lists') === null) {
+		localStorage.setItem('list-saved-lists', JSON.stringify(savedLists));		
+	}
+
+	var savedURLs = [];
+	if (localStorage.getItem('saved-urls') === null) {
+		var names = ["Google", "YouTube", "Amazon"];
+		var urls = ["https://google.com/search?q=~query~", "https://www.youtube.com/results?search_query=~query~","https://www.amazon.com/s/ref=nb_sb_noss?url=search-alias%3Daps&field-keywords=~query~"];
+		for (var i = 0; i < urls.length; i++) {
+			var entry = {
+				name: names[i],
+				url: urls[i]
+			}
+			savedURLs.push(entry);
+		}
+		localStorage.setItem('saved-urls', JSON.stringify(savedURLs));
+	}
 
 }
 
@@ -271,7 +486,8 @@ function listSearchAll() {
 		}*/
 	}
 
-	chrome.runtime.sendMessage(queries);
+	performSearchBackground(queries);
+	//chrome.runtime.sendMessage(queries);
 
 }
 
@@ -284,6 +500,7 @@ function listSearchCheckedOrUnchecked(checkedOrUnchecked) {
 		}
 	}
 
+	//performSearchBackground(queries);
 	chrome.runtime.sendMessage(queries);
 
 }
@@ -320,6 +537,14 @@ function listDeleteCheckedOrUnchecked(checkedOrUnchecked) {
 		}
 	}
 
+}
+
+function listDeleteEmptyCells() {
+	for (var i = (listNumQueries-1); i >= 0; i--) {
+		if (document.getElementById('list-cell-' + i).textContent === "") {
+			listDeleteSearch(i);
+		}
+	}
 }
 
 function listAddSearchQuery() {
@@ -377,11 +602,11 @@ function listRefresh() {
 	listInitializeCheckboxes();
 
 	document.getElementById('list-name-cell').textContent = localStorage.getItem('list-name');
-	document.getElementById('list-name-text-button').innerHTML = '<a href="#" class="btn btn-info">' + document.getElementById('list-name-cell').textContent +'</a>';
 	document.getElementById('list-name-cell').addEventListener("input", listSaveName);
-	document.getElementById('list-name-text-button').outerHTML = document.getElementById('list-name-text-button').outerHTML;
-	document.getElementById('list-name-text-button').addEventListener("click", function() {
-		document.getElementById('list-search-textarea').value += '~' + document.getElementById('list-name-text-button').textContent + '~';
+	document.getElementById('list-name-text-button').innerHTML = '<a id="list-name-text-to-text-area-button" href="#" class="btn btn-info">' + document.getElementById('list-name-cell').textContent +'</a>';
+	document.getElementById('list-name-text-to-text-area-button').outerHTML = document.getElementById('list-name-text-to-text-area-button').outerHTML;
+	document.getElementById('list-name-text-to-text-area-button').addEventListener("click", function() {
+		document.getElementById('list-search-textarea').value += '~' + document.getElementById('list-name-text-to-text-area-button').textContent + '~';
 	});
 	document.getElementById('list-add-num-more-searches-button').addEventListener('click', listAddNumMoreSearches);
 
@@ -398,9 +623,9 @@ function listSaveName() {
 	var name = document.getElementById('list-name-cell').textContent;
 	localStorage.setItem('list-name', name);
 
-	document.getElementById('list-name-text-button').innerHTML = '<a href="#" class="btn btn-info">' + name +'</a>';
-	document.getElementById('list-name-text-button').outerHTML = document.getElementById('list-name-text-button').outerHTML;
-	document.getElementById('list-name-text-button').addEventListener("click", function() {
+	document.getElementById('list-name-text-button').innerHTML = '<a id="list-name-text-to-text-area-button" href="#" class="btn btn-info">' + name +'</a>';
+	document.getElementById('list-name-text-to-text-area-button').outerHTML = document.getElementById('list-name-text-to-text-area-button').outerHTML;
+	document.getElementById('list-name-text-to-text-area-button').addEventListener("click", function() {
 		document.getElementById('list-search-textarea').value += '~' + document.getElementById('list-name-text-button').textContent + '~';
 	});
 
@@ -567,10 +792,10 @@ function listPerformSearch(num) {
 		return false;
 	}
 
-	var url = 'https://google.com/search?q=' + encodeHTML(query);
+	var openURL = url.split('~query~').join(encodeHTML(query));
 
 	if (checkboxes[num].checked) {
-		window.open(url, '_blank');
+		window.open(openURL, '_blank');
 	}
 
 }
@@ -602,6 +827,8 @@ function listDeleteSearch(num) {
 	}
 
 	listRefresh();
+
+	listSetCheckAllState();
 
 }
 
@@ -1081,7 +1308,9 @@ function tableSearchRowOrCol(rowOrCol, num) {
 		}
 	}
 
-	chrome.runtime.sendMessage(queries);
+	performSearchBackground(queries);
+
+	//chrome.runtime.sendMessage(queries);
 
 }
 
@@ -1429,12 +1658,25 @@ function tableSearchAll(rowOrCol) {
 		}
 	}
 
-	chrome.runtime.sendMessage(queries);
+	performSearchBackground(queries);
+	//chrome.runtime.sendMessage(queries);
 
 }
 
 function searchByString(str) {
-	window.open('https://www.google.com/search?q=' + encodeHTML(str), '_blank');
+	var urlToOpen = url.split('~query').join(encodeHTML(str));
+	window.open(urlToOpen, '_blank');
+}
+
+function performSearchBackground(q) {
+	console.log('performing background search');
+	var data = {
+		queries: q,
+		website: url
+	};
+	console.log(JSON.stringify(data));
+	chrome.runtime.sendMessage(JSON.stringify(data));
+
 }
 
 // Converts str special characters (+, -, #, $, ...) to hex for searching. Example: 'C++' will become 'C%2B%2B'
