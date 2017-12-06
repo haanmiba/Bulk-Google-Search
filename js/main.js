@@ -140,6 +140,8 @@ function initializeProgram() {
 		togglePanel('#list-list-of-saved-lists-container');
 	});
 
+	document.getElementById('list-export-list-button').addEventListener("click", exportList);
+
 
 
 
@@ -404,8 +406,8 @@ function listResetLocalStorage() {
 
 	var savedURLs = [];
 	if (localStorage.getItem('saved-urls') === null) {
-		var names = ["Google", "YouTube", "Amazon"];
-		var urls = ["https://google.com/search?q=~query~", "https://www.youtube.com/results?search_query=~query~","https://www.amazon.com/s/ref=nb_sb_noss?url=search-alias%3Daps&field-keywords=~query~"];
+		var names = ["Google", "YouTube", "Amazon", "Reddit"];
+		var urls = ["https://google.com/search?q=~query~", "https://www.youtube.com/results?search_query=~query~","https://www.amazon.com/s/ref=nb_sb_noss?url=search-alias%3Daps&field-keywords=~query~", 'https://www.reddit.com/search?q=~query~&sort=relevance&t=all'];
 		for (var i = 0; i < urls.length; i++) {
 			var entry = {
 				name: names[i],
@@ -1700,18 +1702,33 @@ function tableSearchAll(rowOrCol) {
 }
 
 function searchByString(str) {
-	var urlToOpen = url.split('~query').join(encodeHTML(str));
+	var urlToOpen = url.split('~query~').join(encodeHTML(str));
 	window.open(urlToOpen, '_blank');
 }
 
 function performSearchBackground(q) {
-	console.log('performing background search');
 	var data = {
 		queries: q,
 		website: url
 	};
-	console.log(JSON.stringify(data));
 	chrome.runtime.sendMessage(JSON.stringify(data));
+}
+
+function exportList() {
+	
+	var name = localStorage.getItem('list-name');
+	var data = JSON.parse(localStorage.getItem('list-queries'));
+	var str = '';
+	str += name + '\r\n';
+	for (var i = 0; i < data.length; i++) {
+		var line = data[i];
+		str += line + '\r\n';
+	}
+
+	var aLink = document.createElement('a');
+	aLink.download = name + '.csv';
+	aLink.href = 'data:attachment/csv,' + encodeURIComponent(str);
+	aLink.click();
 
 }
 
