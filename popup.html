@@ -120,7 +120,7 @@
 								<a href="#" class="btn btn-info dropdown-toggle" id="list-load-list-button">Load List</a>
 								<a href="#" class="btn btn-info" id="list-import-list-button">Import List</a>
 								<a href="#" class="btn btn-info" id="list-export-list-button">Export List</a>
-								<div id="list-list-of-saved-lists-container" class="toggleable">
+								<div id="list-list-of-saved-lists-container" class="light-cyan-dropdown-panel toggleable">
 								</div>
 								<div id="list-download-link-panel">
 									
@@ -133,6 +133,9 @@
 
 			<!-- Table panel that allows users to perform Bulk Query in a table-format -->
 			<div id="table-panel">
+				<div>
+					<input id="table-name-input" type="text" style="margin:.5rem;" placeholder="Table Name">
+				</div>
 				<div id="table-cells">
 					<table>
 						<tbody id="table-body">
@@ -196,8 +199,18 @@
 										<a href="#" id="table-invert-all-checked-button">Both</a>										
 									</div>
 								</div>
-								<div id="table-sort-panel" class="toggleable"></div>
-								<div id="table-reverse-panel" class="toggleable"></div>
+								<div id="table-sort-panel" class="toggleable">
+									<label for="table-sort-all-checkbox">Sort All Columns:</label><input id="table-sort-all-checkbox" type="checkbox">
+									<div id="table-sort-panel-headers">
+										
+									</div>
+								</div>
+								<div id="table-reverse-panel" class="toggleable">
+									<label for="table-reverse-all-checkbox">Reverse All Columns:</label><input id="table-reverse-all-checkbox" type="checkbox">
+									<div id="table-reverse-panel-headers">
+										
+									</div>									
+								</div>
 							</div>
 						</div>
 						<div class="light-green-panel">
@@ -214,7 +227,7 @@
 											</div>											
 										</div>
 										<div>
-										<label for="table-header-text-buttons-asynchronous">Asnchronous:</label>
+										<label for="table-header-text-buttons-asynchronous">Asynchronous:</label>
 											<div id="table-header-text-buttons-asynchronous">
 
 											</div>											
@@ -263,12 +276,12 @@
 								<a href="#" class="btn btn-danger dropdown-toggle" id="table-delete-checked-button">Delete Checked</a>
 								<a href="#" class="btn btn-danger dropdown-toggle" id="table-delete-unchecked-button">Delete Unchecked</a>
 								<div id="table-delete-checked-panel" class="red-dropdown-panel toggleable">
-									<a href="#" id="table-clear-checked-row-button">Rows</a>
-									<a href="#" id="table-clear-checked-col-button">Columns</a>
+									<a href="#" id="table-delete-checked-row-button">Rows</a>
+									<a href="#" id="table-delete-checked-col-button">Columns</a>
 								</div>
 								<div id="table-delete-unchecked-panel" class="red-dropdown-panel toggleable">
-									<a href="#" id="table-clear-unchecked-row-button">Rows</a>
-									<a href="#" id="table-clear-unchecked-col-button">Columns</a>
+									<a href="#" id="table-delete-unchecked-row-button">Rows</a>
+									<a href="#" id="table-delete-unchecked-col-button">Columns</a>
 								</div>
 							</div>
 						</div>
@@ -278,6 +291,9 @@
 								<a href="#" class="btn btn-info dropdown-toggle" id="table-load-table-button">Load Table</a>
 								<a href="#" class="btn btn-info" id="table-import-table-button">Import Table</a>
 								<a href="#" class="btn btn-info" id="table-export-table-button">Export Table</a>
+								<div id="table-saved-tables-container" class="light-cyan-dropdown-panel toggleable">
+									
+								</div>
 							</div>
 						</div>
 					</div>

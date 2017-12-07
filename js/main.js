@@ -66,6 +66,8 @@ function initializeProgram() {
 		tableSetCheckRowOrColState('table-row-checkboxes');
 		tableSetCheckRowOrColState('table-col-checkboxes');
 
+		document.getElementById('table-name-input').value = localStorage.getItem('table-name');
+
 	}
 
 	// Create toggle functionality between the two panels of list and table. Always start at list.
@@ -148,7 +150,7 @@ function initializeProgram() {
 
 
 
-
+	document.getElementById('table-name-input').addEventListener("input", tableSaveName);
 
 	document.getElementById('table-add-num-more-rows-button').addEventListener("click", function() {
 		tableAddNumMoreSearches(0);
@@ -216,8 +218,12 @@ function initializeProgram() {
 		toggleBetweenPanels(lightGreenSubpanels, 0);
 		togglePanel('#table-format-search-panel');
 	});
-	//document.getElementById('table-format-search-checked').addEventListener("cl")
-	//document.getElementById('table-format-search-unchecked').addEventListener("cl")
+	document.getElementById('table-format-search-checked').addEventListener("click", function() {
+		tableFormatSearchCheckedOrUncheckedHelper(1);
+	});
+	document.getElementById('table-format-search-unchecked').addEventListener("click", function() {
+		tableFormatSearchCheckedOrUncheckedHelper(0);
+	});
 	document.getElementById('table-format-search-all').addEventListener("click", function() {
 		tableFormatSearchHelper(document.getElementById('table-search-textarea').value);
 	});
@@ -277,6 +283,20 @@ function initializeProgram() {
 		tableClearCheckedOrUnchecked(2, 0);
 	});
 
+
+	document.getElementById('table-delete-checked-row-button').addEventListener("click", function() {
+		tableDeleteCheckedOrUnchecked(0, 1);
+	});
+	document.getElementById('table-delete-checked-col-button').addEventListener("click", function() {
+		tableDeleteCheckedOrUnchecked(1, 1);
+	});
+	document.getElementById('table-delete-unchecked-row-button').addEventListener("click", function() {
+		tableDeleteCheckedOrUnchecked(0, 0);
+	});
+	document.getElementById('table-delete-unchecked-col-button').addEventListener("click", function() {
+		tableDeleteCheckedOrUnchecked(1, 0);
+	});
+
 	var lightRedSubpanels = ["table-delete-checked-panel", "table-delete-unchecked-panel"];
 
 	document.getElementById('table-delete-checked-button').addEventListener("click", function() {
@@ -290,11 +310,21 @@ function initializeProgram() {
 	document.getElementById('table-format-search-button').addEventListener("click", function() {
 		togglePanel('#table-format-search-dropdown-content');
 	});
+
+	document.getElementById('table-save-table-button').addEventListener("click", tableSaveTable);
+	document.getElementById('table-load-table-button').addEventListener("click", function() {
+		togglePanel('#table-saved-tables-container');
+	});
 	document.getElementById('table-export-table-button').addEventListener("click", exportTable);
 
 	refreshSavedURLs();
 	listRefreshSavedLists();
+	tableRefreshSavedTables();
 
+}
+
+function tableSaveName() {
+	localStorage.setItem('table-name', document.getElementById('table-name-input').value);
 }
 
 function toggleBetweenPanels(arr, index) {
@@ -333,8 +363,8 @@ function refreshSavedURLs() {
 	document.getElementById('list-set-url-panel').innerHTML = "";
 	document.getElementById('table-set-url-panel').innerHTML = "";
 	for (var i = 0; i < savedURLs.length; i++) {
-		document.getElementById('list-set-url-panel').innerHTML += '<div class="list-saved-url-container"><div class="panel-content"><a id="list-saved-url-' + i + '-button" class="alignleft" href="#">' + savedURLs[i].name +'</a><a id="list-delete-saved-url-' + i + '-button" class="list-delete-saved-list alignright" href="#">Delete</a><div class="clear"></div></div></div>';
-		document.getElementById('table-set-url-panel').innerHTML += '<div class="table-saved-url-container"><div class="panel-content"><a id="table-saved-url-' + i + '-button" class="alignleft" href="#">' + savedURLs[i].name +'</a><a id="table-delete-saved-url-' + i + '-button" class="table-delete-saved-list alignright" href="#">Delete</a><div class="clear"></div></div></div>';
+		document.getElementById('list-set-url-panel').innerHTML += '<div class="list-saved-url-container"><a id="list-saved-url-' + i + '-button" class="alignleft" href="#">' + savedURLs[i].name +'</a><a id="list-delete-saved-url-' + i + '-button" class="list-delete-saved-list alignright" href="#">Delete</a><div class="clear"></div></div>';
+		document.getElementById('table-set-url-panel').innerHTML += '<div class="table-saved-url-container"><a id="table-saved-url-' + i + '-button" class="alignleft" href="#">' + savedURLs[i].name +'</a><a id="table-delete-saved-url-' + i + '-button" class="table-delete-saved-list alignright" href="#">Delete</a><div class="clear"></div></div>';
 	}
 	for (var i = 0; i < savedURLs.length; i++) {
 		setURLEventListeners(i);
@@ -390,6 +420,74 @@ function listRefreshSavedLists() {
 	}
 }
 
+function tableRefreshSavedTables() {
+	var savedTables = JSON.parse(localStorage.getItem('table-saved-tables'));
+	document.getElementById('table-saved-tables-container').innerHTML = "";
+	for (var i = 0; i < savedTables.length; i++) {
+		savedTables[i].name;
+		document.getElementById('table-saved-tables-container').innerHTML += '<div class="table-saved-table-container"><a id="table-delete-saved-table-' + i + '-button" class="table-delete-saved-table alignright" href="#">Delete</a><a id="table-saved-table-' + i + '-button" class="alignleft" href="#">' + savedTables[i].name +'</a><div class="clear"></div></div>';
+	}
+	for (var i = 0; i < savedTables.length; i++) {
+		tableSavedTablesEventListeners(i);
+	}
+}
+
+function tableSavedTablesEventListeners(i) {
+	document.getElementById('table-saved-table-' + i + '-button').addEventListener("click", function() {
+		tableLoadTable(i);
+	});
+	document.getElementById('table-delete-saved-table-' + i + '-button').addEventListener("click", function() {
+		tableDeleteSavedTable(i);
+	});
+}
+
+function tableLoadTable(i) {
+	var savedTables = JSON.parse(localStorage.getItem('table-saved-tables'));
+
+	document.getElementById('table-name-input').value = savedTables[i].name;
+	localStorage.setItem('table-name', savedTables[i].name);
+	localStorage.setItem('table-headers', JSON.stringify(savedTables[i].headers));
+	localStorage.setItem('table-queries', JSON.stringify(savedTables[i].queries));
+	tableNumQueries.rows = savedTables[i].queries.length;
+	tableNumQueries.cols = savedTables[i].queries[0].length;
+
+	console.log("Rows: " + tableNumQueries.rows);
+	console.log("Cols: " + tableNumQueries.cols);
+
+	var rowCheckboxes = [];
+	for (var i = 0; i < tableNumQueries.rows; i++) {
+		rowCheckboxes[i] = 1;
+	}
+
+	var colCheckboxes = [];
+	for (var j = 0; j < tableNumQueries.cols; j++) {
+		colCheckboxes[i] = 1;
+	}
+
+	localStorage.setItem('table-row-checkboxes', JSON.stringify(rowCheckboxes));
+	localStorage.setItem('table-col-checkboxes', JSON.stringify(colCheckboxes));
+
+	tableRefresh();
+
+	for (var i = 0; i < tableNumQueries.rows; i++) {
+		for (var j = 0; j < tableNumQueries.cols; j++) {
+			tableSetCheck(i, j);
+		}
+	}	
+
+	tableSetCheckAllState();
+	tableSetCheckRowOrColState('table-row-checkboxes');
+	tableSetCheckRowOrColState('table-col-checkboxes');
+
+}
+
+function tableDeleteSavedTable(i) {
+	var savedTables = JSON.parse(localStorage.getItem('table-saved-tables'));
+	savedTables.splice(i, 1);
+	localStorage.setItem('table-saved-tables', JSON.stringify(savedTables));
+	tableRefreshSavedTables();
+}
+
 function listSavedListEventListeners(i) {
 
 	document.getElementById('list-saved-list-' + i + '-button').addEventListener("click", function() {
@@ -411,6 +509,34 @@ function listDeleteSavedList(i) {
 	localStorage.setItem('list-saved-lists', JSON.stringify(savedLists));
 
 	listRefreshSavedLists();
+
+
+}
+
+function tableSaveTable() {
+	var tableSave = {
+		name: localStorage.getItem('table-name'),
+		headers: JSON.parse(localStorage.getItem('table-headers')),
+		queries: JSON.parse(localStorage.getItem('table-queries'))
+	}
+
+	var savedTables = JSON.parse(localStorage.getItem('table-saved-tables'));
+	var tableAlreadyExists = false;
+	for (var i = 0; i < savedTables.length; i++) {
+		if (savedTables[i].name == tableSave.name) {
+			savedTables[i] = tableSave;
+			tableAlreadyExists = true;
+			break;
+		}
+	}
+
+	if (!tableAlreadyExists) {
+		savedTables.push(tableSave);
+	}
+
+	localStorage.setItem('table-saved-tables', JSON.stringify(savedTables));
+
+	tableRefreshSavedTables();
 
 }
 
@@ -578,6 +704,11 @@ function tableResetLocalStorage() {
 
 	var tableHeaders = [];
 	localStorage.setItem('table-headers', JSON.stringify(tableHeaders));
+
+	var tableSavedTables = [];
+	localStorage.setItem('table-saved-tables', JSON.stringify(tableSavedTables));
+
+	localStorage.setItem('table-name', "Table Name");
 
 }
 
@@ -1232,18 +1363,19 @@ function tableRefresh() {
 
 	var headers = JSON.parse(localStorage.getItem('table-headers'));
 
+	document.getElementById('table-sort-panel-headers').innerHTML = '';
+	document.getElementById('table-reverse-panel-headers').innerHTML = '';
 	document.getElementById('table-header-text-buttons-synchronous').innerHTML = '';
-	for (var i = 0; i < headers.length; i++) {
-		document.getElementById('table-header-text-buttons-synchronous').innerHTML += '<a href="#" id="list-header-' + i + '-text-button" class="btn btn-info" style="margin: .2rem;">' + headers[i] + '</a>';
-	}
-
 	document.getElementById('table-header-text-buttons-asynchronous').innerHTML = '';
 	for (var i = 0; i < headers.length; i++) {
-		document.getElementById('table-header-text-buttons-asynchronous').innerHTML += '<a href="#" id="list-header-' + i + '-recursive-text-button" class="btn btn-primary" style="margin: .2rem;">' + headers[i] + '</a>';
+		document.getElementById('table-sort-panel-headers').innerHTML += '<a href="#" id="table-header-' + i + '-sort-button" class="btn btn-info" style="margin: .2rem;">' + headers[i] + '</a>'
+		document.getElementById('table-reverse-panel-headers').innerHTML += '<a href="#" id="table-header-' + i + '-reverse-button" class="btn btn-info" style="margin: .2rem;">' + headers[i] + '</a>'
+		document.getElementById('table-header-text-buttons-synchronous').innerHTML += '<a href="#" id="table-header-' + i + '-text-button" class="btn btn-info" style="margin: .2rem;">' + headers[i] + '</a>';
+		document.getElementById('table-header-text-buttons-asynchronous').innerHTML += '<a href="#" id="table-header-' + i + '-recursive-text-button" class="btn btn-primary" style="margin: .2rem;">' + headers[i] + '</a>';
 	}
 
 	for (var i = 0; i < headers.length; i++) {
-		tableFormatSearchAddActionListeners(i);
+		tableHeaderButtonsAddActionListeners(i);
 	}
 
 	for (var i = 0; i < tableNumQueries.rows; i++) {
@@ -1268,12 +1400,20 @@ function tableRefresh() {
 
 }
 
-function tableFormatSearchAddActionListeners(i) {
+function tableHeaderButtonsAddActionListeners(i) {
+	document.getElementById('table-header-' + i + '-sort-button').addEventListener("click", function() {
+		tableSort(i);
+	});
+	
+	document.getElementById('table-header-' + i + '-reverse-button').addEventListener("click", function() {
+		tableReverse(i);
+	});	
+
 	var headers = JSON.parse(localStorage.getItem('table-headers'));
-	document.getElementById('list-header-' + i + '-text-button').addEventListener("click", function() {
+	document.getElementById('table-header-' + i + '-text-button').addEventListener("click", function() {
 			document.getElementById('table-search-textarea').value += '~' + headers[i] + '~';
 	});
-	document.getElementById('list-header-' + i + '-recursive-text-button').addEventListener("click", function() {
+	document.getElementById('table-header-' + i + '-recursive-text-button').addEventListener("click", function() {
 			document.getElementById('table-search-textarea').value += '*' + headers[i] + '*';
 	});
 }
@@ -1370,7 +1510,7 @@ function tableSetCheckboxes() {
 
 	var rowCheckboxesBinary = JSON.parse(localStorage.getItem('table-row-checkboxes'));
 	var rowCheckboxes = document.getElementsByClassName('table-row-checkboxes');
-	for (var i = 0; i < rowCheckboxesBinary.length; i++) {
+	for (var i = 0; i < rowCheckboxes.length; i++) {
 		if (rowCheckboxesBinary[i] == 1) {
 			rowCheckboxes[i].checked = true;
 		}
@@ -1378,7 +1518,7 @@ function tableSetCheckboxes() {
 
 	var colCheckboxesBinary = JSON.parse(localStorage.getItem('table-col-checkboxes'));
 	var colCheckboxes = document.getElementsByClassName('table-col-checkboxes');
-	for (var i = 0; i < colCheckboxesBinary.length; i++) {
+	for (var i = 0; i < colCheckboxes.length; i++) {
 		if (colCheckboxesBinary[i] == 1) {
 			colCheckboxes[i].checked = true;
 		}
@@ -1722,6 +1862,8 @@ function tableSetCheck(r, c) {
 		colCheckboxes[c].checked = false;
 	}	
 
+
+
 	tableSaveState();
 
 }
@@ -1903,8 +2045,7 @@ function tableSearchAll(rowOrCol) {
 	if (rowOrCol == 0) {
 		for (var i = 0; i < tableNumQueries.rows; i++) {
 			for (var j = 0; j < tableNumQueries.cols; j++) {
-				if (rowCheckboxes[i] == 1 && colCheckboxes[j] == 1 && 
-					document.getElementById('table-cell-' + i + '-' + j).textContent != "") {
+				if (document.getElementById('table-cell-' + i + '-' + j).textContent != "") {
 					queries.push(document.getElementById('table-cell-' + i + '-' + j).textContent);
 				}
 			}
@@ -1912,8 +2053,7 @@ function tableSearchAll(rowOrCol) {
 	} else if(rowOrCol == 1) {
 		for (var i = 0; i < tableNumQueries.cols; i++) {
 			for (var j = 0; j < tableNumQueries.rows; j++) {
-				if (colCheckboxes[i] == 1 && rowCheckboxes[j] == 1 && 
-					document.getElementById('table-cell-' + j + '-' + i).textContent != "") {
+				if (document.getElementById('table-cell-' + j + '-' + i).textContent != "") {
 					queries.push(document.getElementById('table-cell-' + j + '-' + i).textContent);
 				}
 			}
@@ -1998,12 +2138,13 @@ function exportList() {
 }
 
 function exportTable() {
+	var name = localStorage.getItem('table-name');
 	var headers = JSON.parse(localStorage.getItem('table-headers'));
 	var data = JSON.parse(localStorage.getItem('table-queries'));
 	var str = '';
 	var line = ''
 	for (var i = 0; i < headers.length; i++) {
-		line += headers[i];
+		line += '\"' + headers[i] + '\"';
 		if (i < (headers.length-1)) {
 			line += ',';
 		}
@@ -2022,11 +2163,56 @@ function exportTable() {
 	console.log(str);
 
 	var aLink = document.createElement('a');
-	aLink.download = 'table' + '.csv';
+	aLink.download = name + '.csv';
 	aLink.href = 'data:attachment/csv,' + encodeURIComponent(str);
 	aLink.click();
 	$(aLink).remove();
 
+}
+
+function tableSort(i) {
+	var tableQueries = JSON.parse(localStorage.getItem('table-queries'));
+	var indexes = [];
+
+	if (document.getElementById('table-sort-all-checkbox').checked == true) {
+		tableQueries.sort(function(a, b) {
+			if (isNaN(a[i]) || isNaN(b[i])) {
+				if (a[i].toLowerCase() < b[i].toLowerCase()) return -1;
+				if (a[i].toLowerCase() > b[i].toLowerCase()) return 1;				
+			} else {
+				if (parseInt(a[i]) < parseInt(b[i])) return -1;
+				if (parseInt(a[i]) > parseInt(b[i])) return 1;								
+			}
+			return 0;
+		});		
+		localStorage.setItem('table-queries', JSON.stringify(tableQueries));		
+	} else {
+		var queries = tableQueries;
+		var arr = [];
+		for (var j = 0; j < tableQueries.length; j++) {
+			arr.push(tableQueries[j][i]);
+		}
+		arr.sort(function(a, b) {
+			if (isNaN(a) || isNaN(b)) {
+				if (a.toLowerCase() < b.toLowerCase()) return -1;
+				if (a.toLowerCase() > b.toLowerCase()) return 1;				
+			} else {
+				if (parseInt(a) < parseInt(b)) return -1;
+				if (parseInt(a) > parseInt(b)) return 1;								
+			}
+			return 0;
+		});
+		for (var j = 0; j < queries.length; j++) {
+			for (var k = 0; k < queries[0].length; k++) {
+				if (k == i) {
+					queries[j].splice(k, 1, arr[j]);					
+				}
+			}
+		}
+		localStorage.setItem('table-queries', JSON.stringify(queries));		
+	}
+
+	tableRefresh();
 }
 
 function listSort() {
@@ -2060,6 +2246,31 @@ function listSort() {
 
 	listRefresh();
 	listSetCheckAllState();
+}
+
+function tableReverse(i) {
+	var queries = JSON.parse(localStorage.getItem('table-queries'));
+	if (document.getElementById('table-reverse-all-checkbox').checked == true) {
+		queries.reverse();
+		localStorage.setItem('table-queries', JSON.stringify(queries));
+	} else {
+		var arr = [];
+		for (var j = 0; j < queries.length; j++) {
+			arr.push(queries[j][i]);
+		}
+		arr.reverse();
+		for (var j = 0; j < queries.length; j++) {
+			for (var k = 0; k < queries[0].length; k++) {
+				if (k == i) {
+					queries[j].splice(k, 1, arr[j]);
+				}
+			}
+		}
+		localStorage.setItem('table-queries', JSON.stringify(queries));		
+	}
+
+	tableRefresh();
+
 }
 
 function listReverse() {
@@ -2150,9 +2361,93 @@ function tableFormatSearch(content) {
 
 }
 
-function tableRecursiveSearchHelper(str) {
-	console.log(str);
-	tableFormatSearch(str);
+function tableFormatSearchCheckedOrUncheckedHelper(checkedOrUnchecked) {
+	var arr = tableFormatSearchCheckedOrUnchecked(checkedOrUnchecked);
+	console.log(arr);
+}
+
+function tableFormatSearchCheckedOrUnchecked(checkedOrUnchecked) {
+
+	var queries = [];
+	var savedQueries = JSON.parse(localStorage.getItem('table-queries'));
+	var checkboxes = JSON.parse(localStorage.getItem('table-row-checkboxes'));
+
+	var textContent = document.getElementById('table-search-textarea').value;
+
+	var possibleHeadersUsed = JSON.parse(localStorage.getItem('table-headers'));
+	var possibleHeadersUsedForRecursive = JSON.parse(localStorage.getItem('table-headers'));	
+
+	for (var i = 0; i < possibleHeadersUsed.length; i++) {
+		possibleHeadersUsed[i] = '~' + possibleHeadersUsed[i] + '~';
+		possibleHeadersUsedForRecursive[i] = '*' + possibleHeadersUsedForRecursive[i] + '*';
+	}
+
+	var recursed = false;
+
+	for (var i = 0; i < tableNumQueries.rows; i++) {
+		console.log(textContent);
+		if (checkboxes[i] == checkedOrUnchecked) {
+			for (var j = 0; j < tableNumQueries.cols; j++) {
+				var str = textContent;
+				if (textContent.indexOf(possibleHeadersUsedForRecursive[j]) !== -1) {
+					if (savedQueries[i][j] !== '') {
+					str = str.replace(possibleHeadersUsedForRecursive[j], savedQueries[i][j]);
+					var retArr = tableFormatSearch(str);
+					for (var k = 0; k < retArr.length; k++) {
+						queries.push(retArr[k]);
+					}
+
+					}
+				}
+			}
+		}
+	}
+
+	for (var j = 0; j < tableNumQueries.rows; j++) {
+		var str = textContent;
+		if (checkboxes[j] == checkedOrUnchecked) {
+			for (var k = 0; k < tableNumQueries.cols; k++) {
+				str = str.replace(possibleHeadersUsed[k], savedQueries[j][k]);			
+			}
+			queries.push(str)			
+		}
+	}
+
+	//console.log(queries)
+
+	for (var i = queries.length-1; i >= 0; i--) {
+		var entry = queries[i];
+		for (var j = 0; j < possibleHeadersUsedForRecursive.length; j++) {
+			if (entry.indexOf(possibleHeadersUsedForRecursive[j]) !== -1) {
+				queries.splice(i, 1);
+			}
+		}
+	}
+
+	var unique = queries.filter(function(elem, index, self) {return index === self.indexOf(elem);});
+
+	return unique;
+
+	//performSearchBackground(queries);
+
+}
+
+function tableDeleteCheckedOrUnchecked(rowOrCol, checkedOrUnchecked) {
+	var rowCheckboxes = JSON.parse(localStorage.getItem('table-row-checkboxes'));
+	var colCheckboxes = JSON.parse(localStorage.getItem('table-col-checkboxes'));
+	if (rowOrCol == 0) {
+		for (var i = rowCheckboxes.length-1; i >= 0; i--) {
+			if (rowCheckboxes[i] == checkedOrUnchecked) {
+				tableDeleteRowOrCol(0, i);
+			}
+		}		
+	} else if (rowOrCol == 1) {
+		for (var j = colCheckboxes.length-1; j >= 0; j--) {
+			if (colCheckboxes[j] == checkedOrUnchecked) {
+				tableDeleteRowOrCol(1, j);
+			}
+		}			
+	}
 }
 
 // Converts str special characters (+, -, #, $, ...) to hex for searching. Example: 'C++' will become 'C%2B%2B'
