@@ -88,7 +88,9 @@ function initializeProgram() {
 		}
 		togglePanel('#list-add-url-panel');
 	});
-	document.getElementById('list-add-url-submit-button').addEventListener("click", addURL);
+	document.getElementById('list-add-url-submit-button').addEventListener("click", function() {
+		addURL('list');
+	});
 	document.getElementById('list-set-url-button').addEventListener("click", function() {
 		if (document.getElementById('list-add-url-panel').style.display == 'block') {
 			togglePanel(('#list-add-url-panel'));
@@ -96,6 +98,8 @@ function initializeProgram() {
 		togglePanel('#list-set-url-panel');
 	});
 	document.getElementById('list-invert-checked-button').addEventListener("click", listInvertChecked);
+	document.getElementById('list-sort-button').addEventListener("click", listSort);
+	document.getElementById('list-reverse-button').addEventListener("click", listReverse);
 	document.getElementById('list-search-checked-button').addEventListener("click", function() {
 		listSearchCheckedOrUnchecked(1);
 	});
@@ -169,15 +173,144 @@ function initializeProgram() {
 		togglePanel('#table-advanced-panel');
 	});
 
+	var lightGraySubpanels = ["table-add-url-panel", "table-set-url-panel", "table-invert-checked-panel", "table-sort-panel", 
+	"table-reverse-panel"];
+
+	document.getElementById('table-add-url-button').addEventListener("click", function() {
+		toggleBetweenPanels(lightGraySubpanels, 0);
+		togglePanel('#table-add-url-panel');
+	});
+	document.getElementById('table-add-url-submit-button').addEventListener("click", function() {
+		addURL('table');
+	});
+	document.getElementById('table-set-url-button').addEventListener("click", function() {
+		toggleBetweenPanels(lightGraySubpanels, 1);
+		togglePanel('#table-set-url-panel');
+	});
+	document.getElementById('table-invert-checked-button').addEventListener("click", function() {
+		toggleBetweenPanels(lightGraySubpanels, 2);
+		togglePanel('#table-invert-checked-panel');
+	});
+	document.getElementById('table-invert-row-checked-button').addEventListener("click", function() {
+		tableInvertChecked('row');
+	});
+	document.getElementById('table-invert-col-checked-button').addEventListener("click", function() {
+		tableInvertChecked('col');
+	});
+	document.getElementById('table-invert-all-checked-button').addEventListener("click", function() {
+		tableInvertChecked('row');
+		tableInvertChecked('col');
+	});
+	document.getElementById('table-sort-button').addEventListener("click", function() {
+		toggleBetweenPanels(lightGraySubpanels, 3);
+		togglePanel('#table-sort-panel');
+	});
+	document.getElementById('table-reverse-button').addEventListener("click", function() {
+		toggleBetweenPanels(lightGraySubpanels, 4);
+		togglePanel('#table-reverse-panel');
+	});
+
+	var lightGreenSubpanels = ["table-format-search-panel","table-search-checked-panel","table-search-unchecked-panel"]
+
+	document.getElementById('table-format-search-open-panel-button').addEventListener("click", function() {
+		toggleBetweenPanels(lightGreenSubpanels, 0);
+		togglePanel('#table-format-search-panel');
+	});
+	//document.getElementById('table-format-search-checked').addEventListener("cl")
+	//document.getElementById('table-format-search-unchecked').addEventListener("cl")
+	document.getElementById('table-format-search-all').addEventListener("click", function() {
+		tableFormatSearchHelper(document.getElementById('table-search-textarea').value);
+	});
+	document.getElementById('table-search-checked-button').addEventListener("click", function() {
+		toggleBetweenPanels(lightGreenSubpanels, 1);
+		togglePanel('#table-search-checked-panel');
+	});
+	document.getElementById('table-search-unchecked-button').addEventListener("click", function() {
+		toggleBetweenPanels(lightGreenSubpanels, 2);
+		togglePanel('#table-search-unchecked-panel');
+	});
+	document.getElementById('table-search-checked-row-button').addEventListener("click", function() {
+		tableSearchCheckedOrUnchecked(0, 1);
+	});
+	document.getElementById('table-search-checked-col-button').addEventListener("click", function() {
+		tableSearchCheckedOrUnchecked(1, 1);
+	});
+	document.getElementById('table-search-checked-both-button').addEventListener("click", function() {
+		tableSearchCheckedOrUnchecked(2, 1);
+	});
+	document.getElementById('table-search-unchecked-row-button').addEventListener("click", function() {
+		tableSearchCheckedOrUnchecked(0, 0);
+	});
+	document.getElementById('table-search-unchecked-col-button').addEventListener("click", function() {
+		tableSearchCheckedOrUnchecked(1, 0);
+	});
+	document.getElementById('table-search-unchecked-both-button').addEventListener("click", function() {
+		tableSearchCheckedOrUnchecked(2, 0);
+	});
+
+	var lightYellowSubpanels = ["table-clear-checked-panel", "table-clear-unchecked-panel"]
+
+	document.getElementById('table-clear-checked-button').addEventListener("click", function() {
+		toggleBetweenPanels(lightYellowSubpanels, 0);
+		togglePanel('#table-clear-checked-panel');
+	});
+	document.getElementById('table-clear-unchecked-button').addEventListener("click", function() {
+		toggleBetweenPanels(lightYellowSubpanels, 1);
+		togglePanel('#table-clear-unchecked-panel');
+	});
+	document.getElementById('table-clear-checked-row-button').addEventListener("click", function() {
+		tableClearCheckedOrUnchecked(0, 1);
+	});
+	document.getElementById('table-clear-checked-col-button').addEventListener("click", function() {
+		tableClearCheckedOrUnchecked(1, 1);
+	});
+	document.getElementById('table-clear-checked-both-button').addEventListener("click", function() {
+		tableClearCheckedOrUnchecked(2, 1);
+	});
+	document.getElementById('table-clear-unchecked-row-button').addEventListener("click", function() {
+		tableClearCheckedOrUnchecked(0, 0);
+	});
+	document.getElementById('table-clear-unchecked-col-button').addEventListener("click", function() {
+		tableClearCheckedOrUnchecked(1, 0);
+	});
+	document.getElementById('table-clear-unchecked-both-button').addEventListener("click", function() {
+		tableClearCheckedOrUnchecked(2, 0);
+	});
+
+	var lightRedSubpanels = ["table-delete-checked-panel", "table-delete-unchecked-panel"];
+
+	document.getElementById('table-delete-checked-button').addEventListener("click", function() {
+		toggleBetweenPanels(lightRedSubpanels, 0);
+		togglePanel('#table-delete-checked-panel');
+	});
+	document.getElementById('table-delete-unchecked-button').addEventListener("click", function() {
+		toggleBetweenPanels(lightRedSubpanels, 1);
+		togglePanel('#table-delete-unchecked-panel');
+	});
+	document.getElementById('table-format-search-button').addEventListener("click", function() {
+		togglePanel('#table-format-search-dropdown-content');
+	});
+	document.getElementById('table-export-table-button').addEventListener("click", exportTable);
+
 	refreshSavedURLs();
 	listRefreshSavedLists();
 
 }
 
-function addURL() {
+function toggleBetweenPanels(arr, index) {
+	for (var i = 0; i < arr.length; i++) {
+		if (i != index) {
+			if(document.getElementById(arr[i]).style.display == 'block') {
+				togglePanel('#' + arr[i]);
+			}
+		}
+	}
+}
+
+function addURL(listOrTable) {
 	var addingURL = {
-		name: document.getElementById('list-add-url-name-input').value,
-		url: document.getElementById('list-add-url-input').value
+		name: document.getElementById(listOrTable + '-add-url-name-input').value,
+		url: document.getElementById(listOrTable + '-add-url-input').value
 	}
 
 	var expression = /[-a-zA-Z0-9@:%_\+.~#?&//=]{2,256}\.[a-z]{2,4}\b(\/[-a-zA-Z0-9@:%_\+.~#?&//=]*)?/gi;
@@ -198,8 +331,10 @@ function addURL() {
 function refreshSavedURLs() {
 	var savedURLs = JSON.parse(localStorage.getItem('saved-urls'));
 	document.getElementById('list-set-url-panel').innerHTML = "";
+	document.getElementById('table-set-url-panel').innerHTML = "";
 	for (var i = 0; i < savedURLs.length; i++) {
 		document.getElementById('list-set-url-panel').innerHTML += '<div class="list-saved-url-container"><div class="panel-content"><a id="list-saved-url-' + i + '-button" class="alignleft" href="#">' + savedURLs[i].name +'</a><a id="list-delete-saved-url-' + i + '-button" class="list-delete-saved-list alignright" href="#">Delete</a><div class="clear"></div></div></div>';
+		document.getElementById('table-set-url-panel').innerHTML += '<div class="table-saved-url-container"><div class="panel-content"><a id="table-saved-url-' + i + '-button" class="alignleft" href="#">' + savedURLs[i].name +'</a><a id="table-delete-saved-url-' + i + '-button" class="table-delete-saved-list alignright" href="#">Delete</a><div class="clear"></div></div></div>';
 	}
 	for (var i = 0; i < savedURLs.length; i++) {
 		setURLEventListeners(i);
@@ -213,6 +348,13 @@ function setURLEventListeners(i) {
 	document.getElementById('list-delete-saved-url-' + i + '-button').addEventListener("click", function() {
 		deleteSavedURL(i);
 	});
+	document.getElementById('table-saved-url-' + i + '-button').addEventListener("click", function() {
+		setURL(i);
+	});
+	document.getElementById('table-delete-saved-url-' + i + '-button').addEventListener("click", function() {
+		deleteSavedURL(i);
+	});
+
 }
 
 function deleteSavedURL(i) {
@@ -559,7 +701,9 @@ function listClearCheckedOrUnchecked(checkedOrUnchecked) {
 }
 
 function listDeleteAll() {
+	var name = localStorage.getItem('list-name');
 	listResetLocalStorage();
+	localStorage.setItem('list-name', name);
 	listClearAll();
 	listNumQueries = 0;
 	listAddSearchQuery();
@@ -1086,6 +1230,22 @@ function tableRefresh() {
 
 	tableInitializeCheckboxes();
 
+	var headers = JSON.parse(localStorage.getItem('table-headers'));
+
+	document.getElementById('table-header-text-buttons-synchronous').innerHTML = '';
+	for (var i = 0; i < headers.length; i++) {
+		document.getElementById('table-header-text-buttons-synchronous').innerHTML += '<a href="#" id="list-header-' + i + '-text-button" class="btn btn-info" style="margin: .2rem;">' + headers[i] + '</a>';
+	}
+
+	document.getElementById('table-header-text-buttons-asynchronous').innerHTML = '';
+	for (var i = 0; i < headers.length; i++) {
+		document.getElementById('table-header-text-buttons-asynchronous').innerHTML += '<a href="#" id="list-header-' + i + '-recursive-text-button" class="btn btn-primary" style="margin: .2rem;">' + headers[i] + '</a>';
+	}
+
+	for (var i = 0; i < headers.length; i++) {
+		tableFormatSearchAddActionListeners(i);
+	}
+
 	for (var i = 0; i < tableNumQueries.rows; i++) {
 		for (var j = 0; j < tableNumQueries.cols; j++) {
 			tableSetInput(i, j);
@@ -1106,6 +1266,16 @@ function tableRefresh() {
 
 	tableSaveState();
 
+}
+
+function tableFormatSearchAddActionListeners(i) {
+	var headers = JSON.parse(localStorage.getItem('table-headers'));
+	document.getElementById('list-header-' + i + '-text-button').addEventListener("click", function() {
+			document.getElementById('table-search-textarea').value += '~' + headers[i] + '~';
+	});
+	document.getElementById('list-header-' + i + '-recursive-text-button').addEventListener("click", function() {
+			document.getElementById('table-search-textarea').value += '*' + headers[i] + '*';
+	});
 }
 
 function tableSetSmartSearch(i) {
@@ -1433,6 +1603,19 @@ function tableSaveHeaders() {
 
 	localStorage.setItem('table-headers', JSON.stringify(localStorageHeaders));
 
+	document.getElementById('table-header-text-buttons-synchronous').innerHTML = "";
+	for (var i = 0; i < headers.length; i++) {
+		document.getElementById('table-header-text-buttons-synchronous').innerHTML += '<a href="#" id="list-header-' + i + '-text-button" class="btn btn-info" style="margin: .2rem;">' + headers[i].textContent + '</a>';
+	}
+
+	document.getElementById('table-header-text-buttons-asynchronous').innerHTML = "";
+	for (var i = 0; i < headers.length; i++) {
+		document.getElementById('table-header-text-buttons-asynchronous').innerHTML += '<a href="#" id="list-header-' + i + '-recursive-text-button" class="btn btn-primary" style="margin: .2rem;">' + headers[i].textContent + '</a>';
+	}
+
+	for (var i = 0; i < headers.length; i++) {
+		tableFormatSearchAddActionListeners(i);
+	}
 }
 
 function tableCheckAll() {
@@ -1670,6 +1853,47 @@ function togglePanel(id) {
 	$(id).toggle();
 }
 
+function tableSearchCheckedOrUnchecked(rowOrColOrBoth, checkedOrUnchecked) {
+
+	var savedQueries = JSON.parse(localStorage.getItem('table-queries'));
+	var queries = [];
+	var rowCheckboxes = JSON.parse(localStorage.getItem('table-row-checkboxes'));
+	var colCheckboxes = JSON.parse(localStorage.getItem('table-col-checkboxes'));
+
+	if(rowOrColOrBoth == 0) {
+		for (var i = 0; i < tableNumQueries.rows; i++) {
+			if (rowCheckboxes[i] == checkedOrUnchecked) {
+				for (var j = 0; j < tableNumQueries.cols; j++) {
+					if (document.getElementById('table-cell-' + i + '-' + j).textContent != "") {
+						queries.push(savedQueries[i][j]);					
+					}
+				}				
+			}
+		}
+	} else if (rowOrColOrBoth == 1) {
+		for (var j = 0; j < tableNumQueries.cols; j++) {
+			if (colCheckboxes[j] == checkedOrUnchecked) {
+				for (var i = 0; i < tableNumQueries.rows; i++) {
+					if (document.getElementById('table-cell-' + i + '-' + j).textContent != "") {
+						queries.push(savedQueries[i][j]);					
+					}
+				}				
+			}
+		}
+	} else if (rowOrColOrBoth == 2) {
+		for (var j = 0; j < tableNumQueries.cols; j++) {
+			for (var i = 0; i < tableNumQueries.rows; i++) {
+				if (rowCheckboxes[i] == checkedOrUnchecked && colCheckboxes[j] == checkedOrUnchecked && savedQueries[i][j] != "") {
+					queries.push(savedQueries[i][j]);					
+				}
+			}
+		}
+	}
+
+	performSearchBackground(queries);
+
+}
+
 function tableSearchAll(rowOrCol) {
 
 	var queries = [];
@@ -1701,6 +1925,46 @@ function tableSearchAll(rowOrCol) {
 
 }
 
+function tableClearCheckedOrUnchecked(rowOrColOrBoth, checkedOrUnchecked) {
+
+	var queries = JSON.parse(localStorage.getItem('table-queries'));
+	var rowCheckboxes = JSON.parse(localStorage.getItem('table-row-checkboxes'));
+	var colCheckboxes = JSON.parse(localStorage.getItem('table-col-checkboxes'));
+
+	if(rowOrColOrBoth == 0) {
+		for (var i = 0; i < rowCheckboxes.length; i++) {
+			if (rowCheckboxes[i] == checkedOrUnchecked) {
+				queries[i] = [];
+				for (var j = 0; j < tableNumQueries.cols; j++) {
+					queries.push("");
+				}
+			}
+		}
+		localStorage.setItem('table-queries', JSON.stringify(queries));
+	} else if (rowOrColOrBoth == 1) {
+		for (var j = 0; j < colCheckboxes.length; j++) {
+			if (colCheckboxes[j] == checkedOrUnchecked) {
+				for (var i = 0; i < tableNumQueries.rows; i++) {
+					queries[i][j] = "";
+				}
+			}
+		}
+		localStorage.setItem('table-queries', JSON.stringify(queries));
+	} else if (rowOrColOrBoth == 2) {
+		for (var i = 0; i < rowCheckboxes.length; i++) {
+			for (var j = 0; j < tableNumQueries.cols; j++) {
+				if ((rowCheckboxes[i] == checkedOrUnchecked) && (colCheckboxes[j] == checkedOrUnchecked)) {
+					queries[i][j] = "";
+				}
+			}
+		}
+		localStorage.setItem('table-queries', JSON.stringify(queries));
+	}
+
+	tableRefresh();
+
+}
+
 function searchByString(str) {
 	var urlToOpen = url.split('~query~').join(encodeHTML(str));
 	window.open(urlToOpen, '_blank');
@@ -1715,13 +1979,13 @@ function performSearchBackground(q) {
 }
 
 function exportList() {
-	
+
 	var name = localStorage.getItem('list-name');
 	var data = JSON.parse(localStorage.getItem('list-queries'));
 	var str = '';
 	str += name + '\r\n';
 	for (var i = 0; i < data.length; i++) {
-		var line = data[i];
+		var line = '\"' +  data[i] + '\"';
 		str += line + '\r\n';
 	}
 
@@ -1729,7 +1993,166 @@ function exportList() {
 	aLink.download = name + '.csv';
 	aLink.href = 'data:attachment/csv,' + encodeURIComponent(str);
 	aLink.click();
+	$(aLink).remove();
 
+}
+
+function exportTable() {
+	var headers = JSON.parse(localStorage.getItem('table-headers'));
+	var data = JSON.parse(localStorage.getItem('table-queries'));
+	var str = '';
+	var line = ''
+	for (var i = 0; i < headers.length; i++) {
+		line += headers[i];
+		if (i < (headers.length-1)) {
+			line += ',';
+		}
+	}
+	str += line + '\r\n';
+	for (var i = 0; i < data.length; i++) {
+		line = '';
+		for (var j = 0; j < data[0].length; j++) {
+			line += '\"' + data[i][j] + '\"';
+			if (j < (data[0].length-1)) {
+			line += ',';
+		}
+		}
+		str += line + '\r\n';
+	}
+	console.log(str);
+
+	var aLink = document.createElement('a');
+	aLink.download = 'table' + '.csv';
+	aLink.href = 'data:attachment/csv,' + encodeURIComponent(str);
+	aLink.click();
+	$(aLink).remove();
+
+}
+
+function listSort() {
+	var queries = JSON.parse(localStorage.getItem('list-queries'));
+	var checkboxes = JSON.parse(localStorage.getItem('list-checkboxes'));
+	var indexes = [];
+	for (var i = 0; i < queries.length; i++) {
+		var pair = {
+			query: queries[i],
+			oldIndex: i
+		};
+		indexes.push(pair);
+	}
+	queries.sort(function(a, b) {
+		if (a.toLowerCase() < b.toLowerCase()) return -1;
+		if (a.toLowerCase() > b.toLowerCase()) return 1;
+		return 0;
+	});
+	var newCheckboxes = [checkboxes.length];
+	for (var i = 0; i < queries.length; i++) {
+		for (var j = 0; j < indexes.length; j++) {
+			if (queries[i] === indexes[j].query) {
+				newCheckboxes[i] = checkboxes[indexes[j].oldIndex];
+				break;
+			}
+		}
+	}
+
+	localStorage.setItem('list-queries', JSON.stringify(queries));
+	localStorage.setItem('list-checkboxes', JSON.stringify(newCheckboxes));
+
+	listRefresh();
+	listSetCheckAllState();
+}
+
+function listReverse() {
+	var queries = JSON.parse(localStorage.getItem('list-queries'));
+	var checkboxes = JSON.parse(localStorage.getItem('list-checkboxes'));
+	queries.reverse();
+	checkboxes.reverse();
+	localStorage.setItem('list-queries', JSON.stringify(queries));
+	localStorage.setItem('list-checkboxes', JSON.stringify(checkboxes));
+	listRefresh();
+	listSetCheckAllState();
+}
+
+function tableInvertChecked(rowOrCol) {
+	var checkboxes = JSON.parse(localStorage.getItem('table-' + rowOrCol + '-checkboxes'));
+	for (var i = 0; i < checkboxes.length; i++) {
+		checkboxes[i] = (-1) * (checkboxes[i] - 1);
+	}
+	localStorage.setItem('table-' + rowOrCol + '-checkboxes', JSON.stringify(checkboxes));
+	tableRefresh();
+	tableSetCheckAllState();
+	tableSetCheckRowOrColState('table-row-checkboxes');
+	tableSetCheckRowOrColState('table-col-checkboxes');
+}
+
+function tableFormatSearchHelper(content) {
+	var arr = tableFormatSearch(content);
+	console.log(arr);
+}
+
+function tableFormatSearch(content) {
+
+	var queries = [];
+	var savedQueries = JSON.parse(localStorage.getItem('table-queries'));
+
+	var textContent = content;
+
+	var possibleHeadersUsed = JSON.parse(localStorage.getItem('table-headers'));
+	var possibleHeadersUsedForRecursive = JSON.parse(localStorage.getItem('table-headers'));	
+
+	for (var i = 0; i < possibleHeadersUsed.length; i++) {
+		possibleHeadersUsed[i] = '~' + possibleHeadersUsed[i] + '~';
+		possibleHeadersUsedForRecursive[i] = '*' + possibleHeadersUsedForRecursive[i] + '*';
+	}
+
+	var recursed = false;
+
+	for (var i = 0; i < tableNumQueries.rows; i++) {
+		for (var j = 0; j < tableNumQueries.cols; j++) {
+			var str = textContent;
+			if (textContent.indexOf(possibleHeadersUsedForRecursive[j]) !== -1) {
+				if (savedQueries[i][j] !== '') {
+				str = str.replace(possibleHeadersUsedForRecursive[j], savedQueries[i][j]);
+				var retArr = tableFormatSearch(str);
+				for (var k = 0; k < retArr.length; k++) {
+					queries.push(retArr[k]);
+				}
+
+				}
+			}
+		}
+	}
+
+	for (var j = 0; j < tableNumQueries.rows; j++) {
+		var str = textContent;
+		for (var k = 0; k < tableNumQueries.cols; k++) {
+			str = str.replace(possibleHeadersUsed[k], savedQueries[j][k]);			
+		}
+		queries.push(str)
+	}
+
+	//console.log(queries)
+
+	for (var i = queries.length-1; i >= 0; i--) {
+		var entry = queries[i];
+		for (var j = 0; j < possibleHeadersUsedForRecursive.length; j++) {
+			if (entry.indexOf(possibleHeadersUsedForRecursive[j]) !== -1) {
+				queries.splice(i, 1);
+			}
+		}
+	}
+
+	var unique = queries.filter(function(elem, index, self) {return index === self.indexOf(elem);});
+
+	return unique;
+
+	//performSearchBackground(queries);
+
+}
+
+function tableRecursiveSearchHelper(str) {
+	console.log(str);
+	tableFormatSearch(str);
 }
 
 // Converts str special characters (+, -, #, $, ...) to hex for searching. Example: 'C++' will become 'C%2B%2B'

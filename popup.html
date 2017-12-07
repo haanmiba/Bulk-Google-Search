@@ -52,9 +52,11 @@
 					<div id="list-advanced-panel" class="toggleable">
 						<div class="light-gray-panel advanced-panel">
 							<div class="panel-content">
-								<a href="#" id="list-add-url-button" class="btn btn-white dropdown-toggle">Add URL</a>
-								<a href="#" id="list-set-url-button" class="btn btn-white dropdown-toggle">Set URL</a>
-								<a href="#" id="list-invert-checked-button" class="btn btn-white">Invert Checked</a>
+								<a href="#" id="list-add-url-button" class="btn btn-white dropdown-toggle pad-5rem">Add URL</a>
+								<a href="#" id="list-set-url-button" class="btn btn-white dropdown-toggle pad-5rem">Set URL</a>
+								<a href="#" id="list-invert-checked-button" class="btn btn-white pad-5rem">Invert Checked</a>
+								<a href="#" id="list-sort-button" class="btn btn-white pad-5rem">Sort</a>
+								<a href="#" id="list-reverse-button" class="btn btn-white pad-5rem">Reverse</a>
 								<div id="list-add-url-panel" class="toggleable">
 									<div class="panel-content">
 										<div>
@@ -71,7 +73,7 @@
 										<a href="#" id="list-add-url-submit-button" class="btn btn-primary">Submit</a>
 									</div>
 								</div>
-								<div id="list-set-url-panel" class="toggleable">
+								<div id="list-set-url-panel" class="light-gray-dropdown-panel toggleable">
 									
 								</div>
 							</div>
@@ -90,7 +92,7 @@
 											<textarea id="list-search-textarea"></textarea>
 										</div>
 										<a href="#" class="btn btn-success dropdown-toggle" id="list-format-search-button">Search</a>
-										<div id="list-format-search-dropdown-content" class="light-green-panel">
+										<div id="list-format-search-dropdown-content" class="green-dropdown-panel">
 											<a href="#" id="list-format-search-checked">Search Checked</a>
 											<a href="#" id="list-format-search-unchecked">Search Unchecked</a>
 											<a href="#" id="list-format-search-all">Search All</a>
@@ -143,38 +145,131 @@
 						<span id="table-add-num-more-cols"><input type="number" id="table-add-num-more-cols-input" placeholder="Add # more columns"><span class="divider"></span><a id="table-add-num-more-cols-button" class="btn btn-primary" href="#">Submit</a></span>
 				</div>
 				<div id="table-buttons">
-					<div id="table-search-all-dropdown-container">
-						<a id="table-search-all-button" class="btn btn-success dropdown-toggle" href="#">Search All</a>
-					</div>
+					<a id="table-search-all-button" class="btn btn-success dropdown-toggle" href="#">Search All</a>
 					<a id="table-clear-all-button" class="btn btn-warning"href="#">Clear All</a>
 					<a id="table-delete-all-button" class="btn btn-danger" href="#">Delete All</a>
-						<div id="table-search-all-dropdown-content" class="green-dropdown-panel">
-							<a id="table-search-all-row-by-row-button" href="#">Row-by-Row</a>
-							<a id="table-search-all-col-by-col-button" href="#">Column-by-Column</a>
-						</div>
 				</div>
+				<div id="table-search-all-dropdown-content" class="green-dropdown-panel toggleable">
+					<a id="table-search-all-row-by-row-button" href="#">Row-by-Row</a>
+					<a id="table-search-all-col-by-col-button" href="#">Column-by-Column</a>
+				</div>
+
 					<a href="#" id="table-advanced-button" class="dropdown-toggle">Advanced</a>
 					<div id="table-advanced-panel" class="toggleable">
+						<div class="light-gray-panel">
+							<div class="panel-content">
+								<a href="#" id="table-add-url-button" class="btn btn-white dropdown-toggle pad-5rem">Add URL</a>
+								<a href="#" id="table-set-url-button" class="btn btn-white dropdown-toggle pad-5rem">Set URL</a>
+								<a href="#" id="table-invert-checked-button" class="btn btn-white dropdown-toggle pad-5rem">Invert Checked</a>
+								<a href="#" id="table-sort-button" class="btn btn-white dropdown-toggle pad-5rem">Sort</a>
+								<a href="#" id="table-reverse-button" class="btn btn-white dropdown-toggle pad-5rem">Reverse</a>
+								<div id="table-add-url-panel" class="toggleable">
+									<div class="panel-content">
+										<div>
+											
+										</div>
+										<div>
+											<label for="table-add-url-name-input">Name:</label>
+											<input id="table-add-url-name-input" type="text">			
+										</div>
+										<div>
+											<p class="font-size-s">Type in '~query~' where the search term should appear in your custom URL.<br><span style="font-weight:bold;">Example: </span>http://tvtropes.org/pmwiki/search_result.php?q=<span style="font-weight:bold;font-size:12pt;">~query~</span>&amp;cx=partner-pub-6610802604051523%3Aamzitfn8e7v&amp;cof=FORID%3A10&amp;ie=ISO-8859-1&amp;siteurl=&amp;ref=&amp;ss=</p>
+										</div>
+										<div>
+											<label for="table-add-url-input">URL:</label>
+											<textarea id="table-add-url-input"></textarea>
+										</div>
+										<a href="#" id="table-add-url-submit-button" class="btn btn-primary">Submit</a>
+									</div>
+								</div>
+								<div id="table-set-url-panel" class="light-gray-dropdown-panel toggleable">
+									
+								</div>
+								<div id="table-invert-checked-panel" class="light-gray-dropdown-panel toggleable">
+									<div class="panel-content">
+										<a href="#" id="table-invert-row-checked-button">Row</a>										
+									</div>
+									<div class="panel-content">
+										<a href="#" id="table-invert-col-checked-button">Column</a>										
+									</div>
+									<div class="panel-content">
+										<a href="#" id="table-invert-all-checked-button">Both</a>										
+									</div>
+								</div>
+								<div id="table-sort-panel" class="toggleable"></div>
+								<div id="table-reverse-panel" class="toggleable"></div>
+							</div>
+						</div>
 						<div class="light-green-panel">
 							<div class="panel-content">
+								<a href="#" class="btn btn-success dropdown-toggle" id="table-format-search-open-panel-button">Format Search</a>
 								<a href="#" class="btn btn-success dropdown-toggle" id="table-search-checked-button">Search Checked</a>
 								<a href="#" class="btn btn-success dropdown-toggle" id="table-search-unchecked-button">Search Unchecked</a>
-								<br>
-								Format Search:
-								<br><textarea></textarea>
-								<br><a href="#" class="btn btn-success" id="table-format-search-button">Search</a>
+								<div id="table-format-search-panel" class="toggleable">
+									<div class="panel-content">
+										<div>
+										<label for="table-header-text-buttons-synchronous">Synchronous:</label>
+											<div id="table-header-text-buttons-synchronous">
+
+											</div>											
+										</div>
+										<div>
+										<label for="table-header-text-buttons-asynchronous">Asnchronous:</label>
+											<div id="table-header-text-buttons-asynchronous">
+
+											</div>											
+										</div>
+										<div class="textarea-padding">
+											<textarea id="table-search-textarea"></textarea>
+										</div>
+										<a href="#" class="btn btn-success dropdown-toggle" id="table-format-search-button">Search</a>
+										<div id="table-format-search-dropdown-content" class="green-dropdown-panel toggleable">
+											<a href="#" id="table-format-search-checked">Search Checked Rows</a>
+											<a href="#" id="table-format-search-unchecked">Search Unchecked Rows</a>
+											<a href="#" id="table-format-search-all">Search All</a>
+										</div>																		
+									</div>
+								</div>
+								<div id="table-search-checked-panel" class="green-dropdown-panel toggleable">
+									<a href="#" id="table-search-checked-row-button">Rows</a>
+									<a href="#" id="table-search-checked-col-button">Columns</a>
+									<a href="#" id="table-search-checked-both-button">Both</a>
+								</div>
+								<div id="table-search-unchecked-panel" class="green-dropdown-panel toggleable">
+									<a href="#" id="table-search-unchecked-row-button">Rows</a>
+									<a href="#" id="table-search-unchecked-col-button">Columns</a>
+									<a href="#" id="table-search-unchecked-both-button">Both</a>
+								</div>
 							</div>
 						</div>
 						<div class="light-yellow-panel">
 							<div class="panel-content">
 								<a href="#" class="btn btn-warning dropdown-toggle" id="table-clear-checked-button">Clear Checked</a>
 								<a href="#" class="btn btn-warning dropdown-toggle" id="table-clear-unchecked-button">Clear Unchecked</a>
+								<div id="table-clear-checked-panel" class="yellow-dropdown-panel toggleable">
+									<a href="#" id="table-clear-checked-row-button">Rows</a>
+									<a href="#" id="table-clear-checked-col-button">Columns</a>
+									<a href="#" id="table-clear-checked-both-button">Both</a>
+								</div>
+								<div id="table-clear-unchecked-panel" class="yellow-dropdown-panel toggleable">
+									<a href="#" id="table-clear-unchecked-row-button">Rows</a>
+									<a href="#" id="table-clear-unchecked-col-button">Columns</a>
+									<a href="#" id="table-clear-unchecked-both-button">Both</a>
+								</div>
 							</div>
 						</div>
 						<div class="light-red-panel">
 							<div class="panel-content">
 								<a href="#" class="btn btn-danger dropdown-toggle" id="table-delete-checked-button">Delete Checked</a>
 								<a href="#" class="btn btn-danger dropdown-toggle" id="table-delete-unchecked-button">Delete Unchecked</a>
+								<div id="table-delete-checked-panel" class="red-dropdown-panel toggleable">
+									<a href="#" id="table-clear-checked-row-button">Rows</a>
+									<a href="#" id="table-clear-checked-col-button">Columns</a>
+								</div>
+								<div id="table-delete-unchecked-panel" class="red-dropdown-panel toggleable">
+									<a href="#" id="table-clear-unchecked-row-button">Rows</a>
+									<a href="#" id="table-clear-unchecked-col-button">Columns</a>
+								</div>
 							</div>
 						</div>
 						<div class="light-cyan-panel">

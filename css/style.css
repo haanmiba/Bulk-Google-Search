@@ -75,7 +75,7 @@ table, th, td {
 	position: relative;
 }
 
-#table-search-all-dropdown-content, .green-dropdown-panel {
+.green-dropdown-panel {
 	display: none;
 	position: relative;
 	background-color: #2e9c32;
@@ -85,7 +85,7 @@ table, th, td {
     z-index: 1;
 }
 
-#list-format-search-dropdown-content {
+.green-dropdown-panel {
 	display: none;
 	position: relative;
 	background-color: #2e9c32;
@@ -95,26 +95,77 @@ table, th, td {
     z-index: 1;
 }
 
-#table-search-all-dropdown-content a {
+.green-dropdown-panel a {
 	display: block;
 	color: white;
     padding: 12px 16px;
     text-decoration: none;
 }
 
-#list-format-search-dropdown-content a {
+.green-dropdown-panel a {
 	display: block;
 	color: white;
     padding: 12px 16px;
     text-decoration: none;
 }
 
-#table-search-all-dropdown-content a:hover {
+.green-dropdown-panel a:hover {
 	background-color: #257528;
 }
 
-#list-format-search-dropdown-content a:hover {
+.green-dropdown-panel a:hover {
 	background-color: #257528;
+}
+
+.yellow-dropdown-panel {
+	display: none;
+	position: relative;
+	background-color: #eec831;
+    min-width: 160px;
+    max-width: 300px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    z-index: 1;
+}
+
+.yellow-dropdown-panel a {
+	display: block;
+	color: black;
+    padding: 12px 16px;
+    text-decoration: none;
+}
+
+.yellow-dropdown-panel a:hover {
+	background-color: #cfaf2e;
+}
+
+.red-dropdown-panel {
+	display: none;
+	position: relative;
+	background-color: #db3636;
+    min-width: 160px;
+    max-width: 300px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    z-index: 1;
+}
+
+.red-dropdown-panel a {
+	display: block;
+	color: white;
+    padding: 12px 16px;
+    text-decoration: none;
+}
+
+.red-dropdown-panel a:hover {
+	background-color: #8f2929;
+}
+
+#table-delete-checked-panel {
+	max-width: 100px;
+}
+
+#table-delete-unchecked-panel {
+	left: 170px;
+	max-width: 100px;
 }
 
 #list-list-of-saved-lists-container {
@@ -143,7 +194,7 @@ table, th, td {
 	background-color: #206b96;
 }
 
-#list-set-url-panel {
+.light-gray-dropdown-panel {
 	display: none;
 	position: relative;
 	background-color: #eeeeee;
@@ -154,23 +205,47 @@ table, th, td {
     clear: both;
 }
 
-#list-set-url-panel a {
+.light-gray-dropdown-panel a {
 	color: black;
     padding: 12px 16px;
     text-decoration: none;
 }
 
-#list-set-url-panel a:hover {
+.light-gray-dropdown-panel a:hover {
 	color: white;
 }
 
-#list-set-url-panel div {
+.light-gray-dropdown-panel div {
 	color: gray;
     text-decoration: none;
 }
 
-#list-set-url-panel div:hover {
+.light-gray-dropdown-panel div:hover {
 	background-color: #696969;
+}
+
+#table-invert-checked-panel {
+	left: 200px;
+	max-width: 150px;
+}
+
+#table-search-checked-panel {
+	left: 170px;
+	max-width: 150px;
+}
+
+#table-search-unchecked-panel {
+	left: 330px;
+	max-width: 150px;
+}
+
+#table-clear-checked-panel {
+	max-width: 150px;
+}
+
+#table-clear-unchecked-panel {
+	left: 155px;
+	max-width: 150px;
 }
 
 form {
