@@ -10,8 +10,8 @@ var tableNumQueries = {
 var url = 'https://google.com/search?q=~query~';
 
 // When the page loads, initialize the event handlers for our buttons at the bottom of the popup window.
-window.addEventListener("load", initializeProgram);
-
+//window.addEventListener("load", initializeProgram);
+$(window).on('load', initializeProgram);
 
 // Initialize event handlers and initialize local storage.
 function initializeProgram() {
@@ -71,8 +71,12 @@ function initializeProgram() {
 	}
 
 	// Create toggle functionality between the two panels of list and table. Always start at list.
-	document.getElementById('list-tab-to-be-selected').addEventListener("click", function() { toggle(0); });
-	document.getElementById('table-tab-to-be-selected').addEventListener("click", function() { toggle(1); });
+	//document.getElementById('list-tab-to-be-selected').addEventListener("click", function() { toggle(0); });
+	//document.getElementById('table-tab-to-be-selected').addEventListener("click", function() { toggle(1); });
+
+	$('#list-tab-to-be-selected').on('click', function() {toggle(0);});
+	$('#table-tab-to-be-selected').on('click', function() {toggle(1);});
+
 	toggle(0);
 
 
@@ -1078,7 +1082,7 @@ function listSetCheckAllState() {
 	}
 
 	if (allChecked) {
-		document.getElementById('list-check-all-checkbox').checked = true;
+		document.getElementById(' 5').checked = true;
 		document.getElementById('list-check-all-checkbox').indeterminate = false;
 	} 
 
@@ -1462,7 +1466,6 @@ function tableAddEventListeners(i, j) {
 		tableSetCheckRowOrColState('table-row-checkboxes');
 		tableSetCheckRowOrColState('table-col-checkboxes');
 		tableSetCheckAllState();
-		tableSetSmartSearch(i);
 	});
 
 }
@@ -1614,9 +1617,6 @@ function tableDeleteRowOrCol(rowOrCol, num) {
 	var colCheckboxes = JSON.parse(localStorage.getItem('table-col-checkboxes'));	
 	var headers = JSON.parse(localStorage.getItem('table-headers'));
 
-	console.log("Row Checkboxes (before deletion): " + rowCheckboxes);
-	console.log("Col Checkboxes (before deletion): " + colCheckboxes);
-
 	if (rowOrCol == 0 && tableNumQueries.rows != 1) {
 		tableQueries.splice(num, 1);
 		rowCheckboxes.splice(num, 1);
@@ -1629,9 +1629,6 @@ function tableDeleteRowOrCol(rowOrCol, num) {
 		headers.splice(num, 1);
 		tableNumQueries.cols--;
 	}
-
-	console.log("Row Checkboxes (after deletion): " + rowCheckboxes);
-	console.log("Col Checkboxes (after deletion): " + colCheckboxes);
 
 	localStorage.setItem('table-queries', JSON.stringify(tableQueries));
 	localStorage.setItem('table-row-checkboxes', JSON.stringify(rowCheckboxes));
@@ -1902,7 +1899,6 @@ function tableAddNumMoreSearches(rowOrCol) {
 }
 
 function togglePanel(id) {
-	console.log('Test');
 	$(id).toggle();
 }
 
@@ -2075,7 +2071,6 @@ function exportTable() {
 			str += line;
 		}
 	}
-	console.log(str);
 
 	var aLink = document.createElement('a');
 	aLink.download = name + '.csv';
@@ -2213,7 +2208,7 @@ function tableInvertChecked(rowOrCol) {
 
 function tableFormatSearchHelper(content) {
 	var arr = tableFormatSearch(content);
-	console.log(arr);
+	performSearchBackground(arr);
 }
 
 function tableFormatSearch(content) {
@@ -2287,6 +2282,7 @@ function tableFormatSearch(content) {
 
 function tableFormatSearchCheckedOrUncheckedHelper(checkedOrUnchecked) {
 	var arr = tableFormatSearchCheckedOrUnchecked(checkedOrUnchecked);
+	performSearchBackground(arr);
 	console.log(arr);
 }
 
@@ -2430,7 +2426,6 @@ function processFile(fileInput, listOrTable) {
 					}
 				}
 			}
-
 			if (listOrTable == 1) {
 
 				localStorage.setItem('list-name', name);
