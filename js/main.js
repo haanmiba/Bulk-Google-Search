@@ -352,7 +352,7 @@ function addURL(listOrTable) {
 	var expression = /[-a-zA-Z0-9@:%_\+.~#?&//=]{2,256}\.[a-z]{2,4}\b(\/[-a-zA-Z0-9@:%_\+.~#?&//=]*)?/gi;
 	var regex = new RegExp(expression);
 
-	if (addingURL.url.indexOf('~query~') == -1 || !addingURL.name || !addingURL.url) {
+	if (addingURL.url.indexOf('~query~') === -1 || !addingURL.name || !addingURL.url) {
 		return false;
 	}
 
@@ -1082,7 +1082,7 @@ function listSetCheckAllState() {
 	}
 
 	if (allChecked) {
-		document.getElementById(' 5').checked = true;
+		document.getElementById('list-check-all-checkbox').checked = true;
 		document.getElementById('list-check-all-checkbox').indeterminate = false;
 	} 
 
